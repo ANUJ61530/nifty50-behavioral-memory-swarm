@@ -1,0 +1,283 @@
+\documentclass[10pt,twocolumn,3paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{cite}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\geometry{top=0.75in,bottom=0.75in,left=0.75in,right=0.75in}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{\textbf{Cognitive Memory, Peer Influence, and Behavioral Phase Transitions in Financial Markets: An Empirical Study on the Nifty 50 Index}}
+
+\author{
+    \textbf{Anuj Kothari}\\
+    \small Department of Computer Science / Behavioral Finance Research Group\\
+    \small \href{mailto:anujkothari@example.com}{anujkothari@example.com}
+}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Financial markets are governed by boundedly rational human market participants who process past market returns through cognitive memory windows and influence each other through social sentiment networks. In this paper, we develop a behavioral agent-based market model to examine how cognitive memory depth ($M$), behavioral misinterpretation bias ($\eta$), and social peer transmission ($p_{\text{peer}}$) interact to generate market herding, bubbles, and panic crashes. We model a synthetic crowd of $N=150$ market participants exhibiting five realistic behavioral trader archetypes---\emph{Herding Conformists} (Pushovers), \emph{Recency-Biased Traders} (Opportunists), \emph{Anchored History Traders} (Traditionalists), \emph{Contrarians}, and \emph{Macro-Fundamental Anchors} (Curmudgeons)---and empirically reconstruct the crowd's underlying behavioral potential landscape $V(n_+)$ using daily return series from the Indian Nifty 50 Index. Our empirical findings demonstrate that market signals alone without social sentiment transmission ($p_{\text{peer}}=0$) cannot cause market bubbles or panics; individual cognitive errors average out via the Law of Large Numbers, maintaining a single-well, mean-reverting market state ($k>0$) across all memory depths ($M \in [1, 21]$) and cognitive bias levels ($\eta \in [0, 0.45]$). In contrast, social peer interactions ($p_{\text{peer}}=1.0$) induce a spontaneous behavioral pitchfork bifurcation at a critical cognitive memory depth $M_c \approx 9.82$ trading days, locking the market into extreme bullish or bearish consensus ($k<0$). Furthermore, our half-life relaxation experiments ($T_{1/2}$) reveal severe \emph{critical slowing down} for conformist crowds near $M_c$, whereas recency-biased traders adapt rapidly ($T_{1/2} \approx 31$--$35$ days). Finally, we uncover a crucial cognitive asymmetry: when trader misinterpretation bias exceeds $50\%$ ($\eta > 0.50$), crowd sentiment acts as a self-correcting negative feedback loop, inherently quenching market bubbles and restoring equilibrium.
+\end{abstract}
+
+\section{Introduction}
+
+A central quest in behavioral finance and agent-based computational economics is understanding how individual cognitive biases and word-of-mouth social interactions aggregate into macroscopic financial phenomena such as momentum lock-in, market panics, and speculative bubbles \cite{shiller2000irrational, lux1999scaling, kahneman1979prospect}. Classic financial theory assumes perfectly rational agents who continuously process all information instantly. In reality, human market participants possess bounded cognitive capacity, evaluate market history over finite memory horizons, suffer from misinterpretation biases due to emotional stress (fear and greed), and sample sentiment from peers and social networks.
+
+Recent physics-inspired models of collective memory \cite{li2026informational} show that finite memory queues in interacting units can drive abrupt systemic phase transitions from state neutrality to spontaneous consensus. In this paper, we reframe and extend this methodology to model human trading behavior on the Indian Nifty 50 TRI Index.
+
+\subsection{Behavioral & Research Contributions}
+\begin{enumerate}
+    \item \textbf{Social Sentiment Transmission as the Catalyst for Herding}: We prove empirically that individual cognitive errors ($\eta$) acting solely on external price trends ($p_{\text{peer}}=0$) cannot induce market panics or bubbles ($k>0$ for all $M, \eta$). Social peer transmission is a strictly necessary structural requirement for market symmetry breaking.
+    \item \textbf{Critical Cognitive Horizon ($M_c \approx 9.82$ Days)}: On real Nifty 50 market returns, peer-interacting human crowds undergo a behavioral pitchfork bifurcation between $M=9$ and $M=11$ days, matching the analytical prediction $M_c = \frac{\pi}{2(1-2\eta)^2} \approx 9.82$ days for a realistic cognitive bias rate of $\eta = 0.30$ ($30\%$ emotional misinterpretation).
+    \item \textbf{Memory Bias & Half-Life ($T_{1/2}$) Panic Relaxation}: We simulate panic recovery dynamics starting from unanimous bearish panic ($n_+(0)=0$). We discover severe \emph{critical slowing down} for conformist crowds near $M_c$, whereas recency-biased momentum traders recover rapidly ($T_{1/2} \approx 30$ days).
+    \item \textbf{Macro Trend Anchoring (Curmudgeons)}: We show that introducing even a 10\% fraction of macro-fundamental investors (tracking 200-day trend shifts) prevents permanent irrational consensus traps and pins market sentiment relaxation to macro fundamental cycles.
+    \item \textbf{Cognitive Bias Overload ($\eta > 0.50$)}: We demonstrate that extreme cognitive bias ($\eta > 0.50$) acts as a structural negative feedback loop, causing traders to act as inverse sentiment indicators and suppressing market bubbles.
+\end{enumerate}
+
+\section{Behavioral Market Framework & Trader Archetypes}
+
+We model a financial market population of $N$ traders. On trading day $t$, each trader $i \in \{1, \dots, N\}$ forms a binary sentiment orientation $s_i(t) \in \{-1, +1\}$, where $+1$ denotes a bullish (buying) posture and $-1$ denotes a bearish (selling) posture.
+
+\subsection{Cognitive Memory Architecture & Sentiment Transmission}
+Each trader maintains an internal cognitive memory queue $\mathbf{b}_i(t) = [b_i(t), b_i(t-1), \dots, b_i(t-M+1)]^T$ tracking the past $M$ daily observations. On day $t$, trader $i$ receives a daily sentiment observation $\hat{q}_i(t)$:
+\begin{equation}
+    \hat{q}_i(t) = 
+    \begin{cases}
+        s_{\text{peer}}(t-1) & \text{with prob. } p_{\text{peer}} \quad (\text{Social Peer Influence}) \\
+        q_{\text{market}}(t-1) & \text{with prob. } 1 - p_{\text{peer}} \quad (\text{Market Signal})
+    \end{cases}
+\end{equation}
+where $q_{\text{market}}(t-1) = \text{sign}(R_{t-1})$ is the 1-day lagged return direction, and $s_{\text{peer}}(t-1) \sim \text{Bernoulli}(n_+(t-1))$ is a peer sentiment sampled from the market order parameter:
+\begin{equation}
+    n_+(t) = \frac{1}{N} \sum_{i=1}^N \mathbb{I}(s_i(t) = +1)
+\end{equation}
+representing the overall bullish share of the market crowd.
+
+\paragraph{Cognitive Misinterpretation Bias ($\eta$):} To incorporate bounded rationality and irrational sentiment noise (e.g., emotional fear, misreading news, cognitive fatigue), traders misinterpret the observed signal with probability $\eta \in [0, 0.5]$ (such that $\hat{q}_i(t) \leftarrow -\hat{q}_i(t)$ with rate $\eta$).
+
+\subsection{Human Trader Archetypes}
+A trader calculates an internal sentiment score $\sigma_i(t)$ by applying a psychological weighting vector $\mathbf{w}_i = [w_0, w_1, \dots, w_{M-1}]^T$ to their memory queue:
+\begin{equation}
+    \sigma_i(t) = \sum_{k=0}^{M-1} w_k \cdot b_i(t-k)
+\end{equation}
+The trader votes $s_i(t) = \text{sign}(\sigma_i(t))$ (defaulting to $+1$ on ties). We formalize five trader archetypes based on established behavioral finance literature:
+
+\begin{enumerate}
+    \item \textbf{Herding Conformist (Pushover)}: Equal weight across memory, relying on pure crowd consensus:
+    \begin{equation}
+        w_k = \frac{1}{M}, \quad \forall k \in \{0, \dots, M-1\}
+    \end{equation}
+    \item \textbf{Recency-Biased Trader (Opportunist)}: Heavily weights recent observations ($b_{\text{opp}} > 1.0$), exhibiting availability heuristic and recency bias:
+    \begin{equation}
+        w_k \propto b_{\text{opp}}^k \implies w_k = \frac{b_{\text{opp}}^k}{\sum_{j=0}^{M-1} b_{\text{opp}}^j}
+    \end{equation}
+    \item \textbf{Anchored History Trader (Traditionalist)}: Heavily weights older historical memories ($0 < b_{\text{trad}} < 1.0$), exhibiting conservatism bias:
+    \begin{equation}
+        w_k \propto b_{\text{trad}}^k \implies w_k = \frac{b_{\text{trad}}^k}{\sum_{j=0}^{M-1} b_{\text{trad}}^j}
+    \end{equation}
+    \item \textbf{Mean-Reversion Trader (Contrarian)}: Deliberately trades against internal memory consensus, expecting trend reversal:
+    \begin{equation}
+        s_i(t) = -\text{sign}\left(\sum_{k=0}^{M-1} \frac{1}{M} b_i(t-k)\right)
+    \end{equation}
+    \item \textbf{Macro-Fundamental Anchor (Curmudgeon)}: Ignores daily retail peer chatter and short-term price memory, anchoring strictly to long-term macro trend filters (200-day moving average slope):
+    \begin{equation}
+        s_i(t) = C(t) = \text{sign}\left( \text{MA}_{200}(t-1) - \text{MA}_{200}(t-2) \right)
+    \end{equation}
+\end{enumerate}
+
+\subsection{Behavioral Potential Reconstruction}
+Let $x(t) = n_+(t) - 0.5$ denote sentiment displacement from neutrality. We parameterize the empirical crowd sentiment drift $f(x) = \mathbb{E}[\Delta x \mid x]$ using Landau-Ginzburg polynomial drift fitting:
+\begin{equation}
+    f(x) = -k x - c x^3
+\end{equation}
+Integrating $f(x) = - \frac{dV}{dx}$ gives the crowd's effective psychological potential landscape:
+\begin{equation}
+    V(x) = \frac{1}{2} k x^2 + \frac{1}{4} c x^4
+\end{equation}
+where $k > 0$ denotes a \emph{single-well potential} (restoring market force, stable at $x=0$), and $k < 0$ denotes a \emph{double-well potential} (bistable herding, creating self-reinforcing bull bubbles or bear panics at $x^* = \pm \sqrt{-k/c}$).
+
+\section{Market Signals vs. Social Sentiment Networks}
+
+We evaluate two distinct market crowd architectures using daily Nifty 50 return data across cognitive memory depths $M \in [1, 21]$ and cognitive bias rates $\eta \in [0, 0.45]$:
+\begin{itemize}
+    \item \textbf{Isolated Market Traders ($p_{\text{peer}}=0$)}: Traders evaluate market return signs independently without peer interaction.
+    \item \textbf{Social Network Traders ($p_{\text{peer}}=1.0$)}: Traders exchange sentiment through social interaction and peer feedback.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{Case 1a_Pure_Pushover_k_vs_M.png}
+    \caption{Behavioral curvature parameter $k$ vs. cognitive memory depth $M$ on Nifty 50 data ($\eta=0.30$). Isolated traders ($p_{\text{peer}}=0$, blue) remain in a mean-reverting state ($k>0$) for all $M$. Social network traders ($p_{\text{peer}}=1.0$, orange) undergo a pitchfork bifurcation crossing $k=0$ between $M=9$ and $M=11$, confirming critical memory depth $M_c = 9.82$ days.}
+    \label{fig:k_vs_M_pushover}
+\end{figure}
+
+\subsection{Empirical Pitchfork Bifurcation}
+Figure \ref{fig:k_vs_M_pushover} displays the empirical curvature parameter $k$. When traders evaluate prices in isolation ($p_{\text{peer}}=0$), $k$ remains positive ($k > 0$) for all memory lengths. In social network crowds ($p_{\text{peer}}=1.0$), $k$ flips negative between $M=9$ ($k=+0.0117$) and $M=11$ ($k=-0.0329$). This proves that **social sentiment transmission is the mandatory structural catalyst for speculative financial herding**.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{Case 1a_Pure_Pushover_potential.png}
+    \caption{Reconstructed behavioral potential landscapes $V(n_+)$. Left: Isolated traders ($p_{\text{peer}}=0$) maintain a single-well restoring potential across all memory depths. Right: Social network traders ($p_{\text{peer}}=1.0$) transition from single-well stability ($M < 9$) to double-well market herding ($M \ge 11$).}
+    \label{fig:potential_pushover}
+\end{figure}
+
+Figure \ref{fig:potential_pushover} shows the reconstructed potential energy $V(n_+)$. In social crowds with cognitive memory $M \ge 11$ days, market neutrality $n_+=0.5$ becomes an unstable repeller, giving rise to two stable psychological equilibrium wells near $n_+ \approx 0.15$ (bearish panic lock-in) and $n_+ \approx 0.85$ (bullish euphoria lock-in).
+
+\subsection{Suppression of Herding in Isolated Markets}
+Table \ref{tab:market_only_pushover} details the curvature $k$ for isolated traders ($p_{\text{peer}}=0.0$) across memory depths and cognitive bias rates.
+
+\begin{table}[htbp]
+\centering
+\caption{Behavioral curvature $k$ for Isolated Conformist Traders ($p_{\text{peer}}=0.0$) across Misinterpretation Bias $\eta$ and Cognitive Memory $M$. All cells exhibit $k > 0$ (restoring market stability).}
+\label{tab:market_only_pushover}
+\small
+\begin{tabular}{@{}c*{6}{c}@{}}
+\toprule
+$\eta \setminus M$ & 1 & 5 & 9 & 13 & 17 & 21 \\
+\midrule
+0.00 & +1.191 & +0.302 & +0.302 & +0.302 & +0.302 & +0.302 \\
+0.10 & +1.191 & +0.302 & +0.302 & +0.302 & +0.302 & +0.302 \\
+0.20 & +1.191 & +0.302 & +0.302 & +0.302 & +0.302 & +0.302 \\
+0.30 & +1.191 & +0.410 & +0.478 & +0.507 & +0.437 & +0.471 \\
+0.40 & +1.191 & +0.450 & +0.512 & +0.530 & +0.510 & +0.522 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+**No herding or double-well potential ($k < 0$) occurs anywhere in isolated markets**. Without word-of-mouth social feedback, individual trader biases are averaged out by the Law of Large Numbers, keeping the market aggregate strictly mean-reverting.
+
+\section{Panic Relaxation ($T_{1/2}$) & Critical Slowing Down}
+
+To model market recovery from a severe market crash, we initialize the crowd in a state of unanimous bearish panic ($n_+(0)=0$, memory filled with $-1$). We measure the relaxation half-life $T_{1/2}$, defined as the number of trading days required for crowd sentiment $n_+(t)$ to recover to neutrality ($0.50$).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{thalf_vs_M.png}
+    \caption{Panic relaxation half-life $T_{1/2}$ vs. cognitive memory depth $M$ on Nifty 50 data. Herding conformists exhibit severe critical slowing down near $M_c \approx 9.82$ and become trapped in panic consensus (DNF) for $M \ge 13$. Recency-biased traders plateau rapidly ($T_{1/2} \approx 35$ days), while Contrarians flip instantly ($T_{1/2}=M$).}
+    \label{fig:thalf_vs_M}
+\end{figure}
+
+\subsection{Critical Slowing Down Near $M_c$}
+As shown in Figure \ref{fig:thalf_vs_M}, herding conformists suffer from classic \emph{critical slowing down} as cognitive memory depth increases:
+\begin{equation}
+    T_{1/2}(M=1)=3 \to T_{1/2}(M=5)=33 \to T_{1/2}(M=11)=1919 \text{ days}
+\end{equation}
+For $M \ge 13$ days, $T_{1/2}$ fails to recover within the multi-year empirical dataset (Did Not Finish / DNF), representing permanent market panic lock-in.
+
+\subsection{Cognitive Recency Bias as a Circuit Breaker}
+We evaluate psychological memory bias $b$ for Recency-Biased Traders ($b_{\text{opp}} \in [1.1, 2.0]$) and Anchored History Traders ($b_{\text{trad}} \in [0.5, 0.9]$).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{thalf_heatmap_opportunist.png}
+    \caption{Heatmap of panic recovery days $T_{1/2}$ for Recency-Biased Traders across bias parameter $b$ and memory depth $M$. Strong recency bias ($b=2.0$) acts as a psychological circuit breaker, limiting panic relaxation to $T_{1/2} \le 30$ days even for deep memory ($M=21$).}
+    \label{fig:heatmap_opportunist}
+\end{figure}
+
+Figure \ref{fig:heatmap_opportunist} demonstrates that high recency bias ($b_{\text{opp}}=2.0$) prevents sentiment lock-in traps, ensuring rapid market recovery ($T_{1/2} \le 30$ days) across all memory depths. As $b \to 1.0$, recovery times converge to the Herding Conformist curve, establishing that **Herding Conformists represent the theoretical maximum recovery delay bound**.
+
+\subsection{Macro Fundamental Anchoring}
+We analyze the effect of introducing a minority fraction $\phi_C \in [0\%, 30\%]$ of Macro-Fundamental Anchors (Curmudgeons) into a Herding Conformist crowd.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{thalf_heatmap_curmudgeon_nucleation.png}
+    \caption{Effect of Macro-Fundamental Anchor fraction on crowd panic recovery $T_{1/2}$. Introducing $\ge 10\%$ fundamental anchors eliminates permanent panic traps (DNF) for $M \ge 13$, pinning sentiment recovery to $\sim 360$--$500$ trading days.}
+    \label{fig:curmudgeon_nucleation}
+\end{figure}
+
+Figure \ref{fig:curmudgeon_nucleation} illustrates that incorporating $\ge 10\%$ fundamental investors completely rescues the market from permanent panic traps ($\text{DNF}$). The macro anchor serves as a psychological nucleation seed, anchoring market recovery to macro economic cycles ($\sim 360$--$500$ trading days).
+
+\section{Cognitive Bias Overload Asymmetry ($\eta > 0.50$)}
+
+The theoretical critical memory depth formula derived in \cite{li2026informational}:
+\begin{equation}
+    M_c = \frac{\pi}{2(1-2\eta)^2}
+\end{equation}
+uses a squared term $(1-2\eta)^2$, implying symmetric behavior around $\eta = 0.50$ (e.g., $\eta=0.30$ and $\eta=0.70$ yielding identical $M_c = 9.82$).
+
+However, our empirical finance simulations uncover a fundamental breakdown of this mathematical symmetry due to psychological feedback direction.
+
+\subsection{Psychological Feedback Inversion}
+The expected sentiment bit recorded by a trader sampling a peer is:
+\begin{equation}
+    \mathbb{E}[\text{bit}] = (2n_+ - 1)(1 - 2\eta)
+\end{equation}
+\begin{itemize}
+    \item \textbf{Positive Reinforcement Regime ($\eta < 0.50$)}: $(1-2\eta) > 0$. High bullish crowd sentiment $n_+$ generates positive peer observations, reinforcing bullish sentiment and driving **speculative herding ($k < 0$)**.
+    \item \textbf{Negative Reinforcement Regime ($\eta > 0.50$)}: $(1-2\eta) < 0$. High bullish crowd sentiment $n_+$ generates negative peer observations due to cognitive overload, forcing traders to act as inverse sentiment indicators and driving **self-correcting restoring forces ($k > 0$)**.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\caption{Empirical curvature $k$ for Social Conformist Traders ($p_{\text{peer}}=1.0$): Moderate Cognitive Bias ($\eta=0.30$) vs. Extreme Cognitive Bias ($\eta=0.70$).}
+\label{tab:eta_asymmetry}
+\small
+\begin{tabular}{@{}ccc@{}}
+\toprule
+Memory Depth $M$ & $\eta = 0.30$ (Herding Regime) & $\eta = 0.70$ (Self-Correcting Regime) \\
+\midrule
+1 & +0.6067 & +1.3849 \\
+5 & +0.1304 & +0.4756 \\
+9 & +0.0117 & +0.4401 \\
+11 & \textbf{-0.0329 (HERDING)} & +0.4160 \\
+15 & \textbf{-0.0774 (HERDING)} & +0.3794 \\
+21 & \textbf{-0.0562 (HERDING)} & +0.3336 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table \ref{tab:eta_asymmetry} demonstrates that while $\eta = 0.30$ produces double-well market herding ($k < 0$) for $M \ge 11$, extreme cognitive bias $\eta = 0.70$ remains strictly restoring ($k > 0$) for all $M$. Excessive cognitive misinterpretation converts the crowd into accidental contrarians, suppressing financial bubbles.
+
+\section{Conclusion \& Financial Market Regulation}
+
+In this study, we reframed memory queue physics into a behavioral financial framework and evaluated it on Indian Nifty 50 market data. Our core empirical conclusions are:
+\begin{enumerate}
+    \item **Social Sentiment Transmission Drives Panics**: Market price trends in isolation ($p_{\text{peer}}=0$) cannot cause herding. Social word-of-mouth feedback is required for financial market phase transitions.
+    \item **Critical Cognitive Horizon ($M_c \approx 9.82$ Days)**: Human crowd memory beyond two trading weeks triggers spontaneous sentiment bifurcation.
+    \item **Recency Bias Prevents Lock-In**: Availability heuristics and recency weighting ($b_{\text{opp}} > 1.0$) allow market crowds to recover rapidly from panic shocks.
+    \item **Macro Fundamental Anchors Quench Traps**: A 10\% presence of macro-fundamental investors prevents permanent panic lock-in.
+    \item **Cognitive Overload Stabilizes Sentiment**: Cognitive misinterpretation rates $\eta > 0.50$ act as structural stabilizers that prevent bubble formation.
+\end{enumerate}
+
+These quantitative behavioral insights provide actionable frameworks for market regulators, fund managers, and systemic risk authorities to monitor social sentiment transmission channels and cognitive memory horizons to safeguard financial stability.
+
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{99}
+
+\bibitem{shiller2000irrational}
+R.~J. Shiller, \emph{Irrational Exuberance}.\hskip 1em plus 0.5em minus 0.4em\relax Princeton University Press, 2000.
+
+\bibitem{lux1999scaling}
+T.~Lux and M.~Marchesi, ``Scaling and criticality in a stochastic multi-agent model of financial markets,'' \emph{Nature}, vol. 397, no. 6719, pp. 498--500, 1999.
+
+\bibitem{kahneman1979prospect}
+D.~Kahneman and A.~Tversky, ``Prospect theory: An analysis of decision under risk,'' \emph{Econometrica}, vol. 47, no. 2, pp. 263--291, 1979.
+
+\bibitem{li2026informational}
+X.~Li, Y.~Zhang, and M.~Rubenstein, ``Informational Memory Shapes Collective Behavior in Intelligent Swarms,'' \emph{Phys. Rev. Lett.}, vol. 136, p. 138302, 2026.
+
+\bibitem{farmer2009economy}
+J.~D. Farmer and D.~Foley, ``The economy needs agent-based modelling,'' \emph{Nature}, vol. 460, no. 7256, pp. 685--686, 2009.
+
+\end{thebibliography}
+
+\end{document}
