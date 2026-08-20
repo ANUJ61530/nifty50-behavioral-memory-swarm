@@ -194,13 +194,20 @@ Table \ref{tab:top_robust}, Table \ref{tab:standalone_comp}, and Table \ref{tab:
     \item \textbf{Turnover Reduction via Contrarian Injection}: Injecting a Contrarian ($M=21$, $w=0.25$) into a long Pushover ($M=21$) produces an Out-of-Sample Sharpe of **1.470** while reducing daily turnover to **15.2\%**, significantly cutting transaction costs.
 \end{enumerate}
 
-\subsection{Out-of-Sample Cumulative Equity Curves}
-Figure \ref{fig:equity_curves_oos} and Figure \ref{fig:combination_mechanisms_curves} present the out-of-sample cumulative growth of ₹1 for standalone vs. combined personality strategies against the Nifty 50 Buy \& Hold benchmark.
+\subsection{Out-of-Sample Cumulative Equity Curves \& Performance Plots}
+Figure \ref{fig:standalone_equity}, Figure \ref{fig:equity_curves_oos}, Figure \ref{fig:combination_mechanisms_curves}, Figure \ref{fig:overfitting_scatter}, and Figure \ref{fig:sharpe_turnover_M} present the comprehensive empirical backtesting curves across memory depth, personality architectures, and generalization boundaries on Nifty 50 data.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\linewidth]{standalone_personality_equity_curves.png}
+    \caption{Out-of-Sample Cumulative Equity Curves for Individual Standalone Behavioral Personalities (2021--2025). Opportunist ($M=9$, orange) and Curmudgeon (purple) outperform Pushover ($M=9$, blue) and Traditionalist ($M=5$, green), while Contrarian ($M=3$, red) lags.}
+    \label{fig:standalone_equity}
+\end{figure}
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.92\linewidth]{equity_curves_out_of_sample.png}
-    \caption{Out-of-Sample Cumulative Equity Curves (2021--2025) on Nifty 50 Data. The Opportunist+Traditionalist combination ($\text{SR}=1.486$, orange) and Pushover+Contrarian combination ($\text{SR}=1.470$, green) significantly outperform standalone Pushover ($\text{SR}=0.957$, dashed blue) and the Nifty 50 Buy \& Hold benchmark (dotted gray).}
+    \caption{Out-of-Sample Cumulative Equity Curves (2021--2025) for Combined Personality Injection Strategies. The Opportunist+Traditionalist combination ($\text{SR}=1.486$, orange) and Pushover+Contrarian combination ($\text{SR}=1.470$, green) significantly outperform standalone Pushover ($\text{SR}=0.957$, dashed blue) and the Nifty 50 Buy \& Hold benchmark (dotted gray).}
     \label{fig:equity_curves_oos}
 \end{figure}
 
@@ -209,6 +216,13 @@ Figure \ref{fig:equity_curves_oos} and Figure \ref{fig:combination_mechanisms_cu
     \includegraphics[width=0.92\linewidth]{combination_mechanisms_equity_curves.png}
     \caption{Out-of-Sample Cumulative Equity Curves Across Personality Combination Architectures. Queue-Level Injection (orange) achieves superior risk-adjusted growth compared to Kernel Blending (green), Regime Switching (purple), and Ensemble Voting (blue).}
     \label{fig:combination_mechanisms_curves}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.88\linewidth]{train_vs_test_sharpe_overfit.png}
+    \caption{In-Sample (Train) vs. Out-of-Sample (Test) Sharpe Ratio Scatter Plot Across 784 Grid Search Configurations. The red dotted line denotes the Overfitting Boundary ($\Delta \text{Sharpe} > 0.50$). Naive in-sample maximization selects overfit configurations on the bottom right, whereas robust candidates lie near or above the black 1:1 diagonal.}
+    \label{fig:overfitting_scatter}
 \end{figure}
 
 \begin{figure}[htbp]
