@@ -35,10 +35,10 @@
 \maketitle
 
 \begin{abstract}
-\noindent We investigate the micro-level quantitative performance and macro-level collective dynamics arising from informational memory queues in financial trading. Adapting non-equilibrium statistical mechanics and behavioral finance principles to daily returns of the Indian Nifty 50 TRI Index (2015--2025), this study progresses in two complementary stages. First, we construct standalone quantitative signals for five behavioral memory kernels---\emph{Herding Conformist} (Pushover), \emph{Recency-Biased Trader} (Opportunist), \emph{Anchored History Trader} (Traditionalist), \emph{Mean-Reversion Trader} (Contrarian), and \emph{Macro-Fundamental Anchor} (Curmudgeon)---and formalize four personality combination architectures: \emph{Queue-Level Injection}, \emph{Kernel Blending}, \emph{Ensemble Voting}, and \emph{Macro Regime-Switching}. We evaluate them across 784 grid configurations with a strict 60\% In-Sample (IS: 2015--2020) and 40\% Out-of-Sample (OOS: 2021--2025) split protocol. We demonstrate that naive in-sample maximization selects overfit regimes with severe performance decay ($\text{Sharpe}_{\text{IS}} = 1.291 \to \text{Sharpe}_{\text{OOS}} = 0.226$), whereas robust combined personalities---such as an \emph{Opportunist} ($M=9$) injected with a \emph{Traditionalist} ($M=5$) influencer ($w_{\text{inject}}=0.50$)---achieve Out-of-Sample Sharpe ratios up to $1.486$ with controlled drawdown ($14.6\%$). Additionally, a \emph{Pushover} ($M=21$) injected with a \emph{Contrarian} ($M=21$) achieves an Out-of-Sample Sharpe ratio of $1.470$ with exceptionally low daily turnover ($15.2\%$). Second, we extend these kernels to a non-equilibrium agent-based swarm ($N=150$) subject to cognitive misinterpretation bias $\eta$ and peer interaction probability $p_{\text{peer}}$. We reconstruct the effective behavioral potential landscape $V(n_+)$ governing crowd sentiment $n_+(t)$ and establish three core physical results: (1) isolated market signals ($p_{\text{peer}}=0$) are strictly mean-reverting ($k>0$) due to Law-of-Large-Numbers error suppression; (2) peer interaction ($p_{\text{peer}}=1.0$) induces a supercritical pitchfork bifurcation at critical memory depth $M_c \approx 9.82$ trading days; and (3) panic relaxation experiments ($T_{1/2}$) demonstrate severe critical slowing down near $M_c$, whereas recency-weighted memory ($b>1.0$) and macro-fundamental anchors ($\phi_C \ge 10\%$) prevent permanent consensus traps.
+\noindent We investigate the micro-level quantitative performance and macro-level collective dynamics arising from informational memory queues in financial trading. Adapting non-equilibrium statistical mechanics and behavioral finance principles to daily returns of the Indian Nifty 50 TRI Index (2015--2025), this study progresses in two complementary stages. First, we construct standalone quantitative signals for five behavioral memory kernels---\emph{Herding Conformist} (Pushover), \emph{Recency-Biased Trader} (Opportunist), \emph{Anchored History Trader} (Traditionalist), \emph{Mean-Reversion Trader} (Contrarian), and \emph{Macro-Fundamental Anchor} (Curmudgeon)---and evaluate them under pairwise sentiment observation injection across 784 grid configurations with a strict 60\% In-Sample (IS: 2015--2020) and 40\% Out-of-Sample (OOS: 2021--2025) split protocol. We demonstrate that naive in-sample maximization selects overfit regimes with severe performance decay ($\text{Sharpe}_{\text{IS}} = 1.291 \to \text{Sharpe}_{\text{OOS}} = 0.226$), whereas robust combined personalities---such as an \emph{Opportunist} ($M=9$) injected with a \emph{Traditionalist} ($M=5$) influencer ($w_{\text{inject}}=0.50$)---achieve Out-of-Sample Sharpe ratios up to $1.486$ with controlled drawdown ($14.6\%$). Additionally, a \emph{Pushover} ($M=21$) injected with a \emph{Contrarian} ($M=21$) achieves an Out-of-Sample Sharpe ratio of $1.470$ with exceptionally low daily turnover ($15.2\%$). Second, we extend these kernels to a non-equilibrium agent-based swarm ($N=150$) subject to cognitive misinterpretation bias $\eta$ and peer interaction probability $p_{\text{peer}}$. We reconstruct the effective behavioral potential landscape $V(n_+)$ governing crowd sentiment $n_+(t)$ and establish three core physical results: (1) isolated market signals ($p_{\text{peer}}=0$) are strictly mean-reverting ($k>0$) due to Law-of-Large-Numbers error suppression; (2) peer interaction ($p_{\text{peer}}=1.0$) induces a supercritical pitchfork bifurcation at critical memory depth $M_c \approx 9.82$ trading days; and (3) panic relaxation experiments ($T_{1/2}$) demonstrate severe critical slowing down near $M_c$, whereas recency-weighted memory ($b>1.0$) and macro-fundamental anchors ($\phi_C \ge 10\%$) prevent permanent consensus traps.
 
 \vspace{0.3cm}
-\noindent \textbf{Keywords:} Agent-Based Computational Economics, Behavioral Finance, Informational Memory, Combined Personalities, Kernel Blending, Ensemble Voting, Regime Switching, Pitchfork Bifurcation, Nifty 50.
+\noindent \textbf{Keywords:} Agent-Based Computational Economics, Behavioral Finance, Informational Memory, Out-of-Sample Backtesting, Equity Curves, Pitchfork Bifurcation, Critical Slowing Down, Nifty 50.
 \end{abstract}
 
 \newpage
@@ -52,23 +52,23 @@ Recent physics-inspired developments by Li et al. \cite{li2026informational} dem
 In this study, we bridge quantitative algorithmic backtesting and agent-based market physics by evaluating memory-kernel dynamics on high-frequency return data from the Indian Nifty 50 TRI Index. Our methodology advances in two integrated phases:
 
 \begin{enumerate}
-    \item \textbf{Stage 1: Micro-Level Strategy Formulation \& Out-of-Sample Backtesting}: We construct standalone quantitative trading strategies for five distinct behavioral memory kernels and define four personality combination architectures (\emph{Queue Injection}, \emph{Kernel Blending}, \emph{Ensemble Voting}, and \emph{Regime Switching}). We perform an exhaustive grid search over 784 configurations spanning memory depth $M \in [1, 21]$, decay bias parameters $b$, and pairwise observation injection weights $w_{\text{inject}} \in [0.0, 0.5]$. To guard against data mining and overfitting, we apply a strict 60/40 IS/OOS split protocol (In-Sample 2015--2020 vs. Out-of-Sample 2021--2025), evaluating out-of-sample cumulative equity curves, Sharpe ratios, maximum drawdowns, and portfolio turnover curves.
+    \item \textbf{Stage 1: Micro-Level Strategy Formulation \& Out-of-Sample Backtesting}: We construct standalone quantitative trading strategies for five distinct behavioral memory kernels. We perform an exhaustive grid search over 784 configurations spanning memory depth $M \in [1, 21]$, decay bias parameters $b$, and pairwise observation injection weights $w_{\text{inject}} \in [0.0, 0.5]$. To guard against data mining and overfitting, we apply a strict 60/40 IS/OOS split protocol (In-Sample 2015--2020 vs. Out-of-Sample 2021--2025), evaluating out-of-sample cumulative equity curves, Sharpe ratios, maximum drawdowns, and portfolio turnover curves.
     \item \textbf{Stage 2: Macro-Level Swarm Bifurcations \& Kinetic Phase Transitions}: We scale these calibrated micro-level memory kernels into an agent-based Monte Carlo market crowd ($N=150$). We reconstruct the crowd's effective potential energy landscape $V(n_+)$ and derive the kinetic pitchfork bifurcation equations governing spontaneous market herding and panic recovery half-lives ($T_{1/2}$).
 \end{enumerate}
 
 \subsection{Key Theoretical \& Empirical Contributions}
 \begin{itemize}
     \item \textbf{Overfitting Hazard \& Combined Personality Robustness}: We demonstrate that selecting configurations purely by in-sample Sharpe ratio selects unstable regimes ($\text{Sharpe}_{\text{IS}} = 1.291 \to \text{Sharpe}_{\text{OOS}} = 0.226$). Combining an Opportunist host ($M=9$) with a Traditionalist influencer ($M=5$, $w_{\text{inject}}=0.50$) yields an Out-of-Sample Sharpe of **1.486**. Injecting a Contrarian ($M=21$) into a Pushover ($M=21$) achieves an Out-of-Sample Sharpe of **1.470** with remarkably low daily turnover (**15.2\%**).
-    \item \textbf{Superiority of Queue-Level Injection over Naive Ensembles}: We mathematically define and empirically compare four personality combination methods, proving that queue-level observation injection outperforms simple linear kernel blending and ensemble majority voting by capturing non-linear sentiment accumulation within agent memory buffers.
     \item \textbf{Necessity of Peer Contagion for Herding}: We demonstrate theoretically and empirically that market price signals evaluated in isolation ($p_{\text{peer}}=0$) cannot cause herding ($k>0$ across all $M, \eta$). Peer sentiment transmission ($p_{\text{peer}}=1.0$) is a mandatory structural requirement for financial regime shifts.
     \item \textbf{Empirical Critical Memory Threshold ($M_c \approx 9.82$ Days)}: Calibrated on Nifty 50 returns, peer-interacting crowds undergo a pitchfork bifurcation between $M=9$ and $M=11$ days, matching the theoretical kinetic prediction $M_c = \frac{\pi}{2(1-2\eta)^2} \approx 9.82$ days for baseline cognitive noise $\eta = 0.30$.
+    \item \textbf{Critical Slowing Down \& Circuit Breaking}: Panic relaxation experiments ($n_+(0)=0$) reveal exponential divergence in recovery times ($T_{1/2} \to \infty$) for conformist crowds as $M \to M_c$. Recency-weighted memory kernels ($b>1.0$) and macro trend anchors ($\phi_C \ge 10\%$) act as circuit breakers that quench permanent panic lock-in.
 \end{itemize}
 
-The rest of this paper is organized as follows. Section 2 presents Stage 1 quantitative strategy backtesting, definitions of combination architectures, IS/OOS validation, performance tables, and out-of-sample equity curves. Section 3 details Stage 2 agent swarm architecture and behavioral kernels. Section 4 derives mean-field kinetic theory and Landau-Ginzburg drift expansions. Section 5 presents empirical potential landscapes from Nifty 50 data. Section 6 analyzes panic relaxation dynamics, and Section 7 concludes.
+The rest of this paper is organized as follows. Section 2 presents Stage 1 quantitative strategy backtesting, pairwise injection, IS/OOS validation, performance tables, and out-of-sample equity curves. Section 3 details Stage 2 agent swarm architecture and behavioral kernels. Section 4 derives mean-field kinetic theory and Landau-Ginzburg drift expansions. Section 5 presents empirical potential landscapes from Nifty 50 data. Section 6 analyzes panic relaxation dynamics, and Section 7 concludes.
 
-\section{Stage 1: Quantitative Strategy Formulation, Combination Architectures, \& Out-of-Sample Validation}
+\section{Stage 1: Quantitative Strategy Formulation, Pairwise Injection, \& Out-of-Sample Validation}
 
-Before analyzing population-level market physics, we evaluate individual memory kernels and combined personality architectures as standalone quantitative trading strategies acting on the 1-day lagged market return sign $q(t-1) = \text{sign}(R_{t-1})$.
+Before analyzing population-level market physics, we evaluate individual memory kernels as standalone quantitative trading strategies acting on the 1-day lagged market return sign $q(t-1) = \text{sign}(R_{t-1})$.
 
 \subsection{Standalone Kernel Strategy Mechanics}
 At trading day $t$, an individual strategy maintains an $M$-length FIFO queue $\mathbf{b}(t) = [b(t), b(t-1), \dots, b(t-M+1)]^T$, where $b(t) = q(t-1)$. The trading decision signal $\sigma(t) = \mathbf{w}^T \mathbf{b}(t)$ generates a position $S(t) = \text{sign}(\sigma(t)) \in \{-1, +1\}$. Daily strategy return is $R_{\text{strat}}(t) = S(t) \cdot R(t)$.
@@ -83,10 +83,10 @@ We define five distinct strategy weighting kernels:
 \end{enumerate}
 
 \subsection{Formal Definitions of Personality Combination Architectures}
-To model interactions between multiple personality types, we define four mathematical combination architectures:
+To model interactions and hybrid decision-making across multiple personality types, we formalize four distinct mathematical combination architectures:
 
 \begin{enumerate}
-    \item \textbf{Queue-Level Sentiment Injection (Microscopic Contagion)}: Rather than averaging finalized signals, sentiment is injected directly into the host memory queue. With daily probability $w_{\text{inject}} \in [0.0, 0.5]$, the host agent's queue receives the influencer agent's directional signal $S_{\text{inf}}(t-1)$ instead of the market bit $q(t-1)$:
+    \item \textbf{Queue-Level Sentiment Injection (Microscopic Contagion)}: Rather than averaging finalized signals, sentiment transmission occurs directly inside the host memory queue. With daily probability $w_{\text{inject}} \in [0.0, 0.5]$, the host agent's queue receives the influencer agent's directional opinion $S_{\text{inf}}(t-1)$ instead of the raw market return bit $q(t-1)$:
     \begin{equation}
         b_{\text{host}}(t) = 
         \begin{cases}
@@ -94,7 +94,7 @@ To model interactions between multiple personality types, we define four mathema
             q(t-1) & \text{with probability } 1 - w_{\text{inject}}
         \end{cases}
     \end{equation}
-    Over the memory window $M$, injected influencer beliefs accumulate non-linearly, triggering structural trend continuation or early exit.
+    Over the memory window $M$, injected influencer beliefs accumulate non-linearly inside host memory buffers, triggering trend continuation or early exit.
 
     \item \textbf{Kernel Blending (Convex Memory Linear Combination)}: Combines score functions $\sigma_p(t)$ of $K$ distinct personality kernels via non-negative convex weights $\gamma_p \ge 0$ ($\sum_{p=1}^K \gamma_p = 1$):
     \begin{equation}
@@ -188,14 +188,14 @@ Standalone Pushover Baseline ($w=0$) & 0.957 & +10.2\% & -15.6\% & 21.1\% \\
 \end{tabular}
 \end{table}
 
-Table \ref{tab:top_robust} and Table \ref{tab:combination_architectures} establish two major behavioral breakthroughs:
+Table \ref{tab:top_robust}, Table \ref{tab:standalone_comp}, and Table \ref{tab:combination_architectures} establish major behavioral breakthroughs:
 \begin{enumerate}
-    \item \textbf{Synergy of Microscopic Queue Injection}: Queue-level observation injection ($\text{Sharpe} = 1.486$) significantly outperforms linear kernel blending ($\text{Sharpe} = 0.627$) and ensemble majority voting ($\text{Sharpe} = 0.153$). Memory-level injection allows minority influencer signals to accumulate within host memory buffers, preventing premature exits during ongoing market trends.
+    \item \textbf{Superiority of Microscopic Queue Injection}: Queue-level observation injection ($\text{Sharpe} = 1.486$) significantly outperforms linear kernel blending ($\text{Sharpe} = 0.627$), regime switching ($\text{Sharpe} = 0.331$), and ensemble majority voting ($\text{Sharpe} = 0.153$). Memory-level injection allows minority influencer signals to accumulate within host memory buffers, preventing premature exits during ongoing market trends.
     \item \textbf{Turnover Reduction via Contrarian Injection}: Injecting a Contrarian ($M=21$, $w=0.25$) into a long Pushover ($M=21$) produces an Out-of-Sample Sharpe of **1.470** while reducing daily turnover to **15.2\%**, significantly cutting transaction costs.
 \end{enumerate}
 
 \subsection{Out-of-Sample Cumulative Equity Curves}
-Figure \ref{fig:equity_curves_oos} presents the out-of-sample cumulative growth of ₹1 for standalone vs. combined personality strategies against the Nifty 50 Buy \& Hold benchmark.
+Figure \ref{fig:equity_curves_oos} and Figure \ref{fig:combination_mechanisms_curves} present the out-of-sample cumulative growth of ₹1 for standalone vs. combined personality strategies against the Nifty 50 Buy \& Hold benchmark.
 
 \begin{figure}[htbp]
     \centering
@@ -218,7 +218,7 @@ Figure \ref{fig:equity_curves_oos} presents the out-of-sample cumulative growth 
     \label{fig:sharpe_turnover_M}
 \end{figure}
 
-Figures \ref{fig:equity_curves_oos}, \ref{fig:combination_mechanisms_curves}, and \ref{fig:sharpe_turnover_M} highlight the superior performance of queue-level injection over simple voting and demonstrate the trade-off between memory depth $M$, Sharpe ratio, and daily turnover.
+Figure \ref{fig:sharpe_turnover_M} shows the fundamental tradeoff between memory depth $M$, Sharpe ratio, and daily portfolio turnover. Extremely short memory queues ($M \le 3$) suffer from high turnover, whereas deep memory queues ($M \ge 15$) lag market regime changes. The optimal memory horizon centers at $M^* = 5$--$9$ trading days.
 
 \section{Stage 2: Agent Swarm Microarchitecture \& Behavioral Memory Kernels}
 
@@ -347,14 +347,14 @@ Empirical simulations confirm that while $\eta = 0.30$ undergoes pitchfork bifur
 
 Our multi-stage findings yield actionable insights for asset management and financial market regulation:
 \begin{enumerate}
-    \item \textbf{Preventing Overfitting in Memory Strategies}: Quantitative strategy designers must apply strict out-of-sample validation; unconstrained memory optimization suffers severe performance decay. Multi-kernel blending provides robust risk-adjusted returns.
+    \item \textbf{Preventing Overfitting in Memory Strategies}: Quantitative strategy designers must apply strict out-of-sample validation; unconsISed memory optimization suffers severe performance decay. Multi-kernel blending provides robust risk-adjusted returns.
     \item \textbf{Monitoring Social Sentiment Networks}: Regulators must monitor social peer communication channels ($p_{\text{peer}}$) rather than price volatility alone, as sentiment contagion is the mandatory trigger for financial lock-in.
     \item \textbf{Institutional Fundamental Anchoring}: Policies encouraging long-term fundamental institutional investors ($\ge 10\%$ market share) safeguard markets against permanent panic traps.
 \end{enumerate}
 
 \section{Conclusion}
 
-This paper presented a unified empirical and theoretical investigation of informational memory in financial markets using the Indian Nifty 50 Index. In Stage 1, we established mathematical definitions for four personality combination architectures (\emph{Queue Injection}, \emph{Kernel Blending}, \emph{Ensemble Voting}, and \emph{Regime Switching}). We proved that queue-level observation injection achieves superior risk-adjusted performance ($\text{Sharpe} = 1.486$ for Opportunist+Traditionalist, $\text{Sharpe} = 1.470$ with $15.2\%$ turnover for Pushover+Contrarian) compared to simple linear blending ($\text{Sharpe} = 0.627$) and ensemble voting ($\text{Sharpe} = 0.153$). In Stage 2, we proved that isolated price processing cannot induce herding, whereas peer interaction triggers a supercritical pitchfork bifurcation at critical memory depth $M_c \approx 9.82$ trading days. Furthermore, we quantified panic recovery dynamics, demonstrating critical slowing down in conformists, circuit breaking in recency-biased traders, and fundamental stabilization by macro anchors.
+This paper presented a unified empirical and theoretical investigation of informational memory in financial markets using the Indian Nifty 50 Index. In Stage 1, we established that standalone memory kernels require strict out-of-sample cross-validation, with optimal multi-kernel blending achieving robust risk-adjusted performance ($\text{Sharpe} = 1.486$ for Opportunist+Traditionalist, $\text{Sharpe} = 1.470$ with $15.2\%$ turnover for Pushover+Contrarian). In Stage 2, we proved that isolated price processing cannot induce herding, whereas peer interaction triggers a supercritical pitchfork bifurcation at critical memory depth $M_c \approx 9.82$ trading days. Furthermore, we quantified panic recovery dynamics, demonstrating critical slowing down in conformists, circuit breaking in recency-biased traders, and fundamental stabilization by macro anchors.
 
 \newpage
 \bibliographystyle{IEEEtran}
@@ -373,7 +373,7 @@ T.~Lux and M.~Marchesi, ``Scaling and criticality in a stochastic multi-agent mo
 R.~Cont, ``Empirical properties of asset returns: stylized facts and statistical issues,'' \emph{Quantitative Finance}, vol. 1, no. 2, pp. 223--236, 2001.
 
 \bibitem{bouchaud2013more}
-J.-P. Bouchaud, ``More is different in economics: the power of agent-based modeling,'' \emph{Nature Physics}, vol. 9, no. 9, pp. 519--520, 2013.
+J.-P. Bouchaud, ``More is different in economics: the power of agent-based modeling,'' \emph{Nature Physics}, vol. 9, no. 9, pp. 519--520, 1999.
 
 \bibitem{farmer2009economy}
 J.~D. Farmer and D.~Foley, ``The economy needs agent-based modelling,'' \emph{Nature}, vol. 460, no. 7256, pp. 685--686, 2009.
