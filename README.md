@@ -165,7 +165,7 @@ For baseline cognitive misinterpretation noise $\eta = 0.30$, critical memory de
 
 @article{li2026informational,
   title={Informational Memory Shapes Collective Behavior in Intelligent Swarms},
-  author={Li, X. and Zhang, Y. and Rubenstein, M.},
+  author={Li, S. and Phan, T. V. and Di Carlo, L. and Wang, G. and Do, V. H. and Mikhail, E. and Austin, R. H. and Liu, L.},
   journal={Physical Review Letters},
   volume={136},
   pages={138302},
