@@ -171,4 +171,63 @@ For baseline cognitive misinterpretation noise $\eta = 0.30$, critical memory de
   pages={138302},
   year={2026}
 }
+
+@article{kirman1993,
+  title={Ants, Rationality, and Recruitment},
+  author={Kirman, Alan},
+  journal={Quarterly Journal of Economics},
+  volume={108},
+  number={1},
+  pages={137--156},
+  year={1993}
+}
+
+@article{cont2000,
+  title={Herd Behavior and Aggregate Fluctuations in Financial Markets},
+  author={Cont, Rama and Bouchaud, Jean-Philippe},
+  journal={Macroeconomic Dynamics},
+  volume={4},
+  number={2},
+  pages={170--196},
+  year={2000}
+}
+
+@article{scheffer2009,
+  title={Early-Warning Signals for Critical Transitions},
+  author={Scheffer, Marten and Bascompte, Jordi and Brock, William A and Brovkin, Victor and Carpenter, Stephen R and Dakos, Vasilis and Held, Hermann and van Nes, Egbert H and Rietkerk, Max and Sugihara, George},
+  journal={Nature},
+  volume={461},
+  pages={53--59},
+  year={2009}
+}
+
+@article{bailey2017,
+  title={The Probability of Backtest Overfitting},
+  author={Bailey, David H and Borwein, Jonathan M and L{\'o}pez de Prado, Marcos and Zhu, Qiji Jim},
+  journal={Journal of Computational Finance},
+  volume={20},
+  number={4},
+  pages={39--70},
+  year={2017}
+}
+
+@article{bornholdt2001,
+  title={Expectation Bubbles in a Spin Model of Markets: Intermittency from Frustration Across Scales},
+  author={Bornholdt, Stefan},
+  journal={International Journal of Modern Physics C},
+  volume={12},
+  number={5},
+  pages={667--674},
+  year={2001}
+}
+
+@article{alfarano2005,
+  title={Estimation of Agent-Based Models: The Case of an Asymmetric Herding Model},
+  author={Alfarano, Simone and Lux, Thomas and Wagner, Friedrich},
+  journal={Computational Economics},
+  volume={26},
+  number={1},
+  pages={19--49},
+  year={2005}
+}
 ```

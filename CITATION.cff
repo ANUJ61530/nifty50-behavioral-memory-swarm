@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this software or research in your work, please cite it as below."
+authors:
+  - family-names: "Kothari"
+    given-names: "Anuj"
+title: "Nifty 50 Behavioral Memory Swarm Analysis"
+date-released: 2026-08-24
+url: "https://github.com/ANUJ61530/nifty50-behavioral-memory-swarm"
