@@ -1,0 +1,121 @@
+\section{Mathematical Framework and Estimator Definitions}
+
+\subsection{Microscopic Memory Queues and Behavioral Weighting Kernels}
+Let $t \in \{1, 2, \dots, T\}$ denote discrete trading days. The daily percentage return of the underlying asset is:
+\begin{equation}
+    r(t) = \frac{P_{\text{close}}(t) - P_{\text{close}}(t-1)}{P_{\text{close}}(t-1)}
+\end{equation}
+The binary directional return bit $q(t) \in \{-1, +1\}$ is defined by:
+\begin{equation}
+    q(t) = \text{sign}(r(t)) = 
+    \begin{cases}
+        +1 & \text{if } r(t) \ge 0 \\
+        -1 & \text{if } r(t) < 0
+    \end{cases}
+\end{equation}
+To prevent look-ahead bias, each market agent processes only lagged price information $q_{\text{lagged}}(t) = q(t-1)$.
+
+Each agent $i \in \{1, \dots, N\}$ maintains a cognitive memory queue $\mathbf{b}_i(t) \in \{-1, +1\}^M$ of depth $M$:
+\begin{equation}
+    \mathbf{b}_i(t) = [b_i(t), b_i(t-1), \dots, b_i(t-M+1)]^T
+\end{equation}
+The continuous psychological decision score $\sigma_i(t)$ and discrete trading stance $s_i(t)$ are:
+\begin{equation}
+    \sigma_i(t) = \mathbf{w}_i^T \mathbf{b}_i(t) = \sum_{k=0}^{M-1} w_k \cdot b_i(t-k), \quad s_i(t) = \text{sign}(\sigma_i(t))
+\end{equation}
+where normalized memory kernels $\sum_{k=0}^{M-1} |w_k| = 1$ define five distinct behavioral archetypes:
+\begin{enumerate}
+    \item \textbf{Pushover (Herding Conformist)}: Equal memory weighting $w_k = 1/M$.
+    \item \textbf{Opportunist (Recency-Weighted Momentum)}: Exponential recency weighting $w_k \propto b_{\text{opp}}^k$ ($b_{\text{opp}} = 1.5 > 1.0$).
+    \item \textbf{Traditionalist (Distance-Weighted Anchor)}: Exponential historical weighting $w_k \propto b_{\text{trad}}^k$ ($b_{\text{trad}} = 0.7 < 1.0$).
+    \item \textbf{Contrarian (Mean-Reversion Trader)}: Inverted weighting $w_k = -1/M$ with decision $s_i(t) = -\text{sign}(\sum_{k=0}^{M-1} b_i(t-k)/M)$.
+    \item \textbf{Curmudgeon (Macro-Fundamental Trend Anchor)}: Fixed decision based on the 200-day moving average slope:
+    \begin{equation}
+        s_{\text{curm}}(t) = \text{sign}\left( \text{MA}_{200}(t-1) - \text{MA}_{200}(t-2) \right)
+    \end{equation}
+\end{enumerate}
+
+\subsection{Personality Combination Architectures}
+We define four multi-strategy combination architectures:
+\begin{enumerate}
+    \item \textbf{Queue-Level Sentiment Injection (Microscopic Contagion)}: Host agent $i$ replaces its newest queue entry with an influencer's lagged opinion $S_{\text{inf}}(t-1)$ with probability $w_{\text{inject}} \in [0.0, 0.5]$:
+    \begin{equation}
+        b_{\text{host}}(t) = 
+        \begin{cases}
+            S_{\text{inf}}(t-1) & \text{with probability } w_{\text{inject}} \\
+            q(t-1) & \text{with probability } 1 - w_{\text{inject}}
+        \end{cases}
+    \end{equation}
+    \item \textbf{Kernel Blending (Convex Memory Linear Combination)}: Blends continuous score functions across $K$ personalities:
+    \begin{equation}
+        \sigma_{\text{blend}}(t) = \sum_{p=1}^K \gamma_p \cdot \sigma_p(t), \quad S_{\text{blend}}(t) = \text{sign}\left( \sigma_{\text{blend}}(t) \right), \quad \sum_{p=1}^K \gamma_p = 1
+    \end{equation}
+    \item \textbf{Ensemble Voting (Majority Decision Rule)}: Aggregates discrete positions using voting weights $v_p > 0$:
+    \begin{equation}
+        S_{\text{ens}}(t) = \text{sign}\left( \sum_{p=1}^K v_p \cdot S_p(t) \right)
+    \end{equation}
+    \item \textbf{Macro Regime-Switching Dynamics}: Switches between active kernels based on realized volatility:
+    \begin{equation}
+        S_{\text{regime}}(t) = 
+        \begin{cases}
+            S_{\text{opp}}(t) & \text{if } \sigma_{\text{vol}}(t) \le \sigma_{\text{thresh}} \\
+            S_{\text{cont}}(t) & \text{if } \sigma_{\text{vol}}(t) > \sigma_{\text{thresh}}
+        \end{cases}
+    \end{equation}
+    where $\sigma_{\text{vol}}(t)$ is the 21-day rolling return volatility and $\sigma_{\text{thresh}}$ is its median.
+\end{enumerate}
+
+\subsection{Binary Symmetric Channel and Noise Attenuation}
+Candidate bits $\tilde{q}_i(t)$ pass through a Binary Symmetric Channel (BSC) with misinterpretation rate $\eta \in [0, 0.5]$:
+\begin{equation}
+    b_i(t) = \mathcal{N}_\eta \left( \tilde{q}_i(t) \right) = 
+    \begin{cases}
+        -\tilde{q}_i(t) & \text{with probability } \eta \\
+        +\tilde{q}_i(t) & \text{with probability } 1 - \eta
+    \end{cases}
+\end{equation}
+The mathematical expectation of the noise-corrupted bit is derived as:
+\begin{align}
+    \mathbb{E}[b_i(t)] &= (+1)\mathbb{P}(b_i = +1) + (-1)\mathbb{P}(b_i = -1) \\
+    &= (1 - \eta)\mathbb{P}(\tilde{q}_i = +1) + \eta\mathbb{P}(\tilde{q}_i = -1) - \left[(1 - \eta)\mathbb{P}(\tilde{q}_i = -1) + \eta\mathbb{P}(\tilde{q}_i = +1)\right] \\
+    &= (1 - 2\eta)\left[\mathbb{P}(\tilde{q}_i = +1) - \mathbb{P}(\tilde{q}_i = -1)\right] = (1 - 2\eta)\mathbb{E}[\tilde{q}_i(t)]
+\end{align}
+The factor $(1 - 2\eta) \in [0, 1.0]$ represents the linear signal attenuation imposed by cognitive observation noise.
+
+\subsection{Thermodynamic Limit ($N \to \infty$) and Mean-Field Kinetics}
+Let $n_+(t) = \frac{1}{N} \sum_{j=1}^N \mathbb{I}(s_j(t) = +1)$ denote the bullish crowd fraction, and $x(t) = n_+(t) - 0.5 \in [-0.5, 0.5]$ denote displacement from neutral consensus. In a peer-interacting crowd ($p_{\text{peer}}=1.0$), each agent's score is the sum of $M$ Bernoulli trials with mean $\mu_b = 2(1-2\eta)x(t-1)$ and variance $\sigma_b^2 \approx 1$.
+
+By the Central Limit Theorem, the distribution of decision scores converges to $\sigma_i \sim \mathcal{N}(\mu_\sigma, \sigma_\sigma^2)$ with $\mu_\sigma = 2(1-2\eta)x(t-1)$ and $\sigma_\sigma = 1/\sqrt{M}$. The probability that an agent votes bullish is:
+\begin{equation}
+    \mathbb{P}(s_i = +1) = \int_0^\infty \frac{1}{\sqrt{2\pi \sigma_\sigma^2}} \exp\left( -\frac{(\sigma - \mu_\sigma)^2}{2\sigma_\sigma^2} \right) d\sigma = \frac{1}{2} \left[ 1 + \text{erf}\left( (1-2\eta)\sqrt{2M} \cdot x(t-1) \right) \right]
+\end{equation}
+In the thermodynamic limit $N \to \infty$, $n_+(t) = \mathbb{P}(s_i = +1)$, yielding the continuous order parameter mapping:
+\begin{equation}
+    x(t) = \frac{1}{2} \text{erf}\left( (1-2\eta)\sqrt{2M} \cdot x(t-1) \right)
+\end{equation}
+
+\subsection{Landau-Ginzburg Drift Expansion and Critical Threshold $M_c$}
+Expanding $\text{erf}(z) = \frac{2}{\sqrt{\pi}}\left( z - \frac{z^3}{3} + \mathcal{O}(z^5) \right)$ near $x \approx 0$ gives the continuous drift equation $\frac{dx}{dt} = -k x - c x^3$, where:
+\begin{align}
+    k &= 1 - (1-2\eta)\sqrt{\frac{2M}{\pi}} \\
+    c &= \frac{2\sqrt{2}}{3\sqrt{\pi}}(1-2\eta)^3 M^{3/2} > 0
+\end{align}
+Integrating $\frac{dx}{dt} = -\frac{\partial V}{\partial x}$ defines the effective psychological potential landscape:
+\begin{equation}
+    V(x) = \frac{1}{2} k x^2 + \frac{1}{4} c x^4
+\end{equation}
+Setting $k = 0$ defines the critical memory depth $M_c$:
+\begin{equation}
+    1 - (1-2\eta)\sqrt{\frac{2M_c}{\pi}} = 0 \implies M_c = \frac{\pi}{2(1-2\eta)^2}
+\end{equation}
+For baseline noise $\eta = 0.30$, $M_c \approx 9.82$ trading days.
+
+\subsection{Effective Memory Depth and Potential Barrier Height}
+For non-uniform weighting kernels $\mathbf{w}$, the effective memory depth $M_{\text{eff}}$ is defined as:
+\begin{equation}
+    M_{\text{eff}} = \frac{1}{\sum_{k=0}^{M-1} w_k^2}
+\end{equation}
+When $M_{\text{eff}} > M_c$, curvature $k < 0$, creating a double-well potential with stable equilibria at $x^* = \pm \sqrt{-k/c}$ and potential barrier height:
+\begin{equation}
+    \Delta V(M) = V(0) - V(x^*) = \frac{k(M)^2}{4 c(M)}
+\end{equation}

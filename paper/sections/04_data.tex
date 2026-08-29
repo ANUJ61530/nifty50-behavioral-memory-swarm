@@ -1,0 +1,21 @@
+\section{Data and Universe Construction}
+
+\subsection{Asset Universe and Sample Period}
+The empirical universe comprises the daily closing prices of the Indian Nifty 50 Total Return Index (TRI) obtained from the National Stock Exchange of India (NSE). The raw dataset spans from January 2, 2015 to December 31, 2025, containing 2,726 trading days across 11 calendar years.
+
+\subsection{Warm-Up Initialization and Clean Evaluated Sample}
+To initialize the 200-day moving average required for the Curmudgeon baseline and to construct the 1-day lagged returns, the first 250 observations are utilized as a warm-up buffer. The clean evaluated dataset consists of 2,476 contiguous trading days.
+
+\subsection{Chronological In-Sample and Out-of-Sample Partitioning}
+To prevent data leakage and simulate live trading deployment, the dataset is partitioned chronologically into:
+\begin{itemize}
+    \item \textbf{In-Sample (IS) Training Period}: 1,485 trading days (60.0\% of sample), spanning January 2015 to December 2020. This period includes the 2016 demonetization shock and the March 2020 global COVID-19 liquidity crisis.
+    \item \textbf{Out-of-Sample (OOS) Testing Period}: 991 trading days (40.0\% of sample), spanning January 2021 to December 2025. This period serves as an untouched testing environment to evaluate real-world generalization.
+\end{itemize}
+
+\subsection{Zero-Lookahead Execution Safety Protocol}
+All decision signals $S(t)$ executed on trading day $t$ strictly condition on information available up to market close on day $t-1$:
+\begin{equation}
+    S(t) = \mathcal{F}\Big( q(t-1), q(t-2), \dots, q(t-M) \Big)
+\end{equation}
+The portfolio return on day $t$ is computed as $R_{\text{strat}}(t) = S(t) \cdot r(t)$, guaranteeing strict zero-lookahead integrity across all backtests.

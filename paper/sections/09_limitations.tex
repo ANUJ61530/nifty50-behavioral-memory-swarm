@@ -1,0 +1,10 @@
+\section{Limitations}
+
+\subsection{Binary Decision Abstraction and Continuous Order Execution}
+The current behavioral framework maps continuous percentage price changes into discrete binary return signs $q(t) = \text{sign}(r(t)) \in \{-1, +1\}$. While this simplifies the mathematical derivation of Fokker-Planck kinetics, real market participants scale position sizing proportionally to expected risk-adjusted magnitude. Future extensions should incorporate continuous conviction weights into the FIFO queue dynamics.
+
+\subsection{Daily Sampling Frequency versus Intraday Microstructure}
+The empirical analysis operates at daily resolution on the Nifty 50 Total Return Index. Intraday phenomena, such as high-frequency order book queue dynamics, bid-ask spread bounces, and latency arbitrage, are outside the scope of this daily memory framework.
+
+\subsection{Single-Asset Universe Generalizability}
+Although the Nifty 50 TRI represents the primary benchmark of Indian equity markets, validating cross-market universality across developed equity benchmarks (e.g., S\&P 500, Euro Stoxx 50) and alternative asset classes (foreign exchange, sovereign commodities, cryptocurrency markets) remains an essential area for future research.

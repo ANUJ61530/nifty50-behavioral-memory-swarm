@@ -1,0 +1,23 @@
+\section{Methodology and Computational Pipeline}
+
+\subsection{Experimental Architecture}
+The computational framework progresses through five sequential simulation and backtesting modules:
+
+\begin{enumerate}
+    \item \textbf{Standalone Memory Sweep Pipeline}: Evaluates individual personality kernels across cognitive memory horizons $M \in \{1, 2, \dots, 21\}$, tracking In-Sample and Out-of-Sample Sharpe ratios, maximum drawdowns, and daily portfolio turnover.
+    \item \textbf{Combinatorial Interaction Grid Search}: Sweeps 852 parameter combinations spanning four host archetypes, five influencer archetypes, memory depths $M \in \{5, 9, 15, 21\}$, and injection weights $w_{\text{inject}} \in \{0.0, 0.125, 0.25, 0.50\}$.
+    \item \textbf{Monte Carlo Swarm Physics Simulation}: Simulates a population of $N=150$ interacting agents over 2,476 trading steps. Empirically estimates the drift function $f(x) = \mathbb{E}[\Delta x \mid x]$ across varying observation noise $\eta \in [0.0, 0.45]$ and peer contagion probability $p_{\text{peer}} \in \{0.0, 1.0\}$.
+    \item \textbf{Non-Equilibrium Panic Relaxation Simulator}: Initializes the crowd in a state of unanimous panic consensus ($n_+(0) = 0.0, \mathbf{b}_i(0) = -\mathbf{1}$) and measures the empirical relaxation half-life $T_{1/2}$ required for sentiment to recover to neutral equilibrium ($n_+ = 0.50$).
+    \item \textbf{Physics-Informed Pre-Fit Filtering (PIMS Filter)}: Evaluates the effectiveness of filtering strategy configurations prior to backtesting by requiring $M_{\text{eff}} \le M_c \approx 9.82$ trading days.
+\end{enumerate}
+
+\subsection{Quantitative Performance Metrics}
+For each backtested strategy with daily returns $R_{\text{strat}}(t)$, we evaluate:
+\begin{align}
+    \text{Annualized Sharpe Ratio: } & S = \frac{\mathbb{E}[R_{\text{strat}}]}{\text{Std}(R_{\text{strat}})} \times \sqrt{252} \\
+    \text{Daily Portfolio Turnover: } & \text{TO} = \frac{1}{T} \sum_{t=1}^T |S(t) - S(t-1)| \times 100\% \\
+    \text{Maximum Drawdown: } & \text{MaxDD} = \min_{t} \left( \frac{W(t) - \max_{u \le t} W(u)}{\max_{u \le t} W(u)} \right) \\
+    \text{Overfitting Gap: } & \Delta \text{Sharpe} = \text{Sharpe}_{\text{IS}} - \text{Sharpe}_{\text{OOS}} \\
+    \text{Stability Ratio: } & R_{\text{stability}} = \frac{\text{Sharpe}_{\text{OOS}}}{\text{Sharpe}_{\text{IS}}}
+\end{align}
+where $W(t) = \prod_{u=1}^t (1 + R_{\text{strat}}(u))$ represents cumulative strategy wealth.

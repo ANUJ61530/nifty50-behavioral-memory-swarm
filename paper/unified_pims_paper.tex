@@ -1,0 +1,129 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% --- Title & Author ---
+\title{\textbf{Physics-Informed Market Strategy (PIMS): Unifying Microscopic Cognitive Memory Kernels with Macroscopic Non-Equilibrium Swarm Kinetics on Nifty 50}}
+\author{\textbf{Anuj Kothari} \\ Department of Chemical Engineering, Indian Institute of Technology Indore}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Quantitative trading strategies frequently suffer from backtest overfitting, where empirical parameter choices perform exceptionally in-sample but degrade rapidly out-of-sample. We propose the \textbf{Physics-Informed Market Strategy (PIMS)} framework, which proves theoretically and empirically that strategy overfitting ($\Delta \text{Sharpe}$) is the direct manifestation of a macroscopic pitchfork phase transition ($k < 0, M > M_c \approx 9.82$ days) in the underlying agent crowd dynamics. Evaluating $852$ strategy configurations on the Nifty 50 TRI Index (2015--2025), we show that queue-level sentiment injection achieves superior out-of-sample Sharpe ratios ($\text{Sharpe}_{\text{OOS}} = 1.486$) while maintaining sub-critical memory dynamics ($M_{\text{eff}} < M_c$). Furthermore, applying a physics-informed pre-fit filter ($M_{\text{eff}} \le M_c$) reduces out-of-sample overfitting by $37.7\%$ while improving mean out-of-sample risk-adjusted returns by $+41.4\%$.
+\end{abstract}
+
+\section{Introduction \& Microscopic Memory Kernels}
+
+Bounded rationality dictates that financial decision-makers process past price return signals $q(t) = \text{sign}(r(t)) \in \{-1, +1\}$ through finite cognitive memory queues of depth $M$. Each agent $i$ evaluates a continuous psychological decision score $\sigma_i(t) = \mathbf{w}_i^T \mathbf{b}_i(t)$ governed by behavioral weighting kernels $\mathbf{w}_i$:
+\begin{enumerate}
+    \item \textbf{Pushover}: Equal memory weighting ($w_k = 1/M$).
+    \item \textbf{Opportunist}: Recency-weighted memory ($w_k \propto b^k, b=1.5$).
+    \item \textbf{Traditionalist}: Distance-weighted memory ($w_k \propto b^k, b=0.7$).
+    \item \textbf{Contrarian}: Sign-inverted memory ($w_k = -1/M$).
+    \item \textbf{Curmudgeon}: Structural 200-day moving average anchor ($s_{\text{curm}}(t) = \text{sign}(\Delta \text{MA}_{200})$).
+\end{enumerate}
+
+\section{Personality Combination Architectures \& Microscopic Contagion}
+
+We formulate Queue-Level Sentiment Injection (Microscopic Contagion), where host agent $i$ samples an influencer's sentiment bit $S_{\text{inf}}(t-1)$ with probability $w_{\text{inject}} \in [0, 0.5]$ prior to score evaluation:
+\begin{equation}
+    b_{\text{host}}(t) = 
+    \begin{cases} 
+        S_{\text{inf}}(t-1) & \text{with probability } w_{\text{inject}} \\ 
+        q(t-1) & \text{with probability } 1 - w_{\text{inject}} 
+    \end{cases}
+\end{equation}
+
+Microscopic injection alters the bit distribution prior to sign thresholding, outperforming post-decision ensemble voting ($\text{Sharpe}_{\text{OOS}} = 1.486$ vs $0.153$, Table \ref{tab:strategy_comparison}).
+
+\begin{table}[htbp]
+\centering
+\caption{Out-of-Sample Strategy Performance Across Combination Architectures (2021--2025)}
+\label{tab:strategy_comparison}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Architecture Setup} & $\mathbf{\text{Sharpe}_{\text{IS}}}$ & $\mathbf{\text{Sharpe}_{\text{OOS}}}$ & $\mathbf{\text{Ret}_{\text{ann}}}$ & \textbf{MaxDD} & \textbf{Turnover} \\
+\midrule
+\textbf{Queue Injection (Opp $M=9$ + Trad $M=5$, $w=0.5$)} & \textbf{1.52} & \textbf{1.486} & \textbf{+18.4\%} & \textbf{-14.6\%} & 44.3\% \\
+\textbf{Queue Injection (Push $M=21$ + Cont $M=21$, $w=0.25$)} & \textbf{1.49} & \textbf{1.470} & \textbf{+16.8\%} & \textbf{-16.4\%} & \textbf{15.2\%} \\
+Kernel Blend (Opp + Trad Convex Mix) & 0.68 & 0.627 & +7.9\% & -19.6\% & 52.0\% \\
+Regime Switch (Vol-Gated Opp/Cont) & 0.41 & 0.331 & +3.6\% & -19.3\% & 41.0\% \\
+Ensemble Vote (Majority Voting) & 0.18 & 0.153 & +1.2\% & -19.6\% & 53.8\% \\
+Nifty 50 Buy \& Hold & 0.45 & 0.820 & +12.4\% & -38.4\% & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Macroscopic Agent Swarm Physics \& Pitchfork Bifurcations}
+
+In the thermodynamic limit $N \to \infty$, an agent crowd with peer interaction probability $p_{\text{peer}} = 1.0$ and cognitive noise $\eta$ obeys the continuous mean-field mapping:
+\begin{equation}
+    x(t) = \frac{1}{2} \text{erf}\left( (1 - 2\eta) \sqrt{2M} \cdot x(t-1) \right)
+\end{equation}
+Taylor expanding $\text{erf}(z)$ near neutral equilibrium ($x \approx 0$) yields the Landau-Ginzburg drift equation $\frac{dx}{dt} = -k x - c x^3$, where curvature $k = 1 - (1 - 2\eta) \sqrt{\frac{2M}{\pi}}$. Setting $k = 0$ yields the exact critical memory depth:
+\begin{equation}
+    M_c = \frac{\pi}{2(1 - 2\eta)^2} \approx 9.82 \text{ trading days (for } \eta = 0.30)
+\end{equation}
+
+When $M > M_c$, curvature $k < 0$, inducing a supercritical pitchfork bifurcation that transforms the single-well potential $V(x) = \frac{1}{2} k x^2 + \frac{1}{4} c x^4$ into a double-well herding bistability lock-in state ($x^* = \pm \sqrt{-k/c}$).
+
+\section{Panic Relaxation Kinetics \& Minority Nucleation}
+
+Initializing unanimous panic ($n_+(0) = 0.0$), the panic relaxation half-life $T_{1/2}$ diverges as $M \to M_c^-$ (Critical Slowing Down). Injecting a minority fraction $\phi_C \ge 10\%$ of structural trend anchors (\textit{Curmudgeons}) modifies the drift equation by an exogenous bias field $h = \phi_C \cdot C(t)$, breaking double-well symmetry and restoring panic recovery ($T_{1/2} \le 30$--$60$ days).
+
+\section{The PIMS Unification Framework: Explaining Overfitting via Phase Transitions}
+
+We bridge Stage 1 quantitative strategy performance with Stage 2 swarm physics.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\linewidth]{pims_overfitting_vs_normalized_M.png}
+    \caption{Overfitting Gap ($\Delta \text{Sharpe} = \text{Sharpe}_{\text{IS}} - \text{Sharpe}_{\text{OOS}}$) vs. Normalized Cognitive Memory Depth ($M_{\text{eff}} / M_c$). Demonstrates a sharp phase transition at $M_{\text{eff}} = M_c$: sub-critical configurations ($M/M_c \le 1.0$) maintain minimal overfitting, while super-critical configurations ($M/M_c > 1.0$) collapse into sentiment lock-in traps.}
+    \label{fig:pims_overfit_phase}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\linewidth]{pims_curvature_overlay_sharpe.png}
+    \caption{Overlay of Landau Potential Curvature $k(M)$ (Red) with Out-of-Sample Strategy Sharpe Ratio $\text{Sharpe}_{\text{OOS}}(M)$ (Blue/Orange/Green). Proves that peak out-of-sample strategy performance ($M^* \approx 8\text{--}9$ days) occurs immediately adjacent to the critical bifurcation boundary ($M_c \approx 9.82$ days).}
+    \label{fig:pims_overlay}
+\end{figure}
+
+\subsection{Physical Mechanism of Strategy Overfitting}
+When strategy memory depth exceeds $M_c \approx 9.82$ days, negative potential curvature ($k < 0$) creates double-well sentiment hysteresis. In-sample bull runs lock the strategy into long positions, creating an illusion of high performance ($\text{Sharpe}_{\text{IS}} = 1.29$). However, when out-of-sample regimes shift, sentiment lock-in prevents timely exit signals, causing performance collapse ($\text{Sharpe}_{\text{OOS}} \to 0.06$).
+
+Conversely, sub-critical configurations ($M_{\text{eff}} < M_c, k > 0$) refresh memory buffers rapidly ($T_{1/2} \le 30$ days), ensuring ergodic adaptability to out-of-sample regime changes.
+
+\section{Empirical Strategy Selection Benchmark}
+
+We benchmark traditional empirical strategy selection (naive top-IS Sharpe pick) against the \textbf{PIMS Physics-Informed Filter} ($M_{\text{eff}} \le M_c \land T_{1/2} \le 60\text{d}$) across $852$ configurations.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\linewidth]{pims_benchmark_selection.png}
+    \caption{Strategy Selection Benchmark: Comparing Naive In-Sample Selection vs. Physics-Informed PIMS Filter. The PIMS Filter increases Out-of-Sample Sharpe by $+41.4\%$ ($0.564$ vs $0.399$) while reducing the overfitting gap by $37.7\%$ ($0.375$ vs $0.602$).}
+    \label{fig:pims_benchmark}
+\end{figure}
+
+\section{Conclusion}
+The Physics-Informed Market Strategy (PIMS) framework establishes that backtest overfitting is governed by macroscopic crowd phase transitions. By enforcing physical sub-critical stability constraints ($M_{\text{eff}} \le M_c$), quantitative portfolio managers can systematically purge overfitted strategies prior to backtesting, unlocking robust out-of-sample alpha on real-world asset markets.
+
+\end{document}

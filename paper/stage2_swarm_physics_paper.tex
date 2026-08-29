@@ -1,0 +1,203 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% --- Title & Author ---
+\title{\textbf{Stage 2: Non-Equilibrium Agent Swarm Physics, Peer Contagion, and Spontaneous Phase Transitions in Financial Markets}}
+\author{\textbf{Anuj Kothari} \\ Department of Chemical Engineering, Indian Institute of Technology Indore}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+While Stage 1 analyzed isolated quantitative strategies, Stage 2 investigates how microscopic behavioral decision rules scale into macroscopic crowd phenomena within a non-equilibrium agent-based swarm ($N=150$). In this first section, we formalize the agent swarm microarchitecture, informational queue dynamics, cognitive observation noise operator $\mathcal{N}_\eta$, and peer sentiment transmission protocol. We prove analytically that bounded cognitive noise $\eta$ introduces a fundamental linear dampening factor $(1 - 2\eta)$ on signal transmission, establishing the micro-foundation for macroscopic mean-field kinetics and phase transitions.
+\end{abstract}
+
+\section{Motivation \& Swarm Microarchitecture}
+
+Financial asset markets are complex non-equilibrium adaptive systems where $N$ interacting agents exchange sentiment across social networks and market price return signals. 
+
+\subsection{Variable Definitions \& State Space}
+Let $N = 150$ denote the Monte Carlo population size. At discrete trading day $t \in \{1, \dots, T\}$, agent $i \in \{1, \dots, N\}$ adopts a binary trading stance $s_i(t) \in \{-1, +1\}$, where $+1$ represents a bullish posture and $-1$ a bearish posture.
+
+The macroscopic state of the crowd is characterized by the bullish crowd fraction (the order parameter $n_+(t)$):
+\begin{equation}
+    n_+(t) = \frac{1}{N} \sum_{j=1}^N \mathbb{I}(s_j(t) = +1)
+\end{equation}
+To evaluate symmetry breaking around the unpolarized state ($n_+ = 0.5$), we define the shifted crowd sentiment parameter $x(t)$:
+\begin{equation}
+    x(t) = n_+(t) - \frac{1}{2} \in [-0.5, +0.5]
+\end{equation}
+
+\section{Candidate Sentiment Bit Sampling \& Binary Symmetric Channel (BSC)}
+
+\subsection{Candidate Bit Sampling Protocol}
+At day $t$, agent $i$ receives a candidate sentiment bit $\tilde{q}_i(t) \in \{-1, +1\}$ generated according to:
+\begin{equation}
+    \tilde{q}_i(t) = 
+    \begin{cases} 
+        s_{\text{peer}}(t-1) & \text{with probability } p_{\text{peer}} \quad (\text{Peer Sentiment Contagion}) \\ 
+        q_{\text{market}}(t-1) & \text{with probability } 1 - p_{\text{peer}} \quad (\text{Market Return Signal}) 
+    \end{cases}
+\end{equation}
+where $s_{\text{peer}}(t-1) \sim \text{Bernoulli}(n_+(t-1))$ samples a random peer's stance from the previous day's crowd distribution.
+
+By the Law of Total Probability, the expected value of candidate bit $\tilde{q}_i(t)$ is:
+\begin{equation}
+    \mathbb{P}(\tilde{q}_i(t) = +1) = p_{\text{peer}} \left( x(t-1) + \frac{1}{2} \right) + (1 - p_{\text{peer}}) \mathbb{I}(q_{\text{market}}(t-1) = +1)
+\end{equation}
+
+\subsection{Noise Transmission Through Binary Symmetric Channel}
+Candidate bits pass through a Binary Symmetric Channel (BSC) with misinterpretation rate $\eta \in [0, 0.5]$ to generate noise-corrupted memory bit $b_i(t)$:
+\begin{equation}
+    b_i(t) = \mathcal{N}_\eta \left( \tilde{q}_i(t) \right) = 
+    \begin{cases} 
+        -\tilde{q}_i(t) & \text{with probability } \eta \\ 
+        +\tilde{q}_i(t) & \text{with probability } 1 - \eta 
+    \end{cases}
+\end{equation}
+
+\subsection{Derivation of Noise Attenuation Factor}
+The expectation of the noise-corrupted memory bit $\mathbb{E}[b_i(t)]$ is derived as:
+\begin{align}
+    \mathbb{E}[b_i(t)] &= (+1) \cdot \mathbb{P}(b_i(t) = +1) + (-1) \cdot \mathbb{P}(b_i(t) = -1) \\
+    &= (1 - \eta) \mathbb{P}(\tilde{q}_i = +1) + \eta \mathbb{P}(\tilde{q}_i = -1) - \left[ (1 - \eta) \mathbb{P}(\tilde{q}_i = -1) + \eta \mathbb{P}(\tilde{q}_i = +1) \right] \\
+    &= (1 - 2\eta) \left[ \mathbb{P}(\tilde{q}_i = +1) - \mathbb{P}(\tilde{q}_i = -1) \right]
+\end{align}
+Yielding the fundamental linear information dampening equation:
+\begin{equation}
+    \mathbb{E}[b_i(t)] = (1 - 2\eta) \mathbb{E}[\tilde{q}_i(t)]
+\end{equation}
+
+\subsection{FIFO Memory Queue \& Score Evaluation}
+Agent $i$ pushes $b_i(t)$ into its First-In-First-Out (FIFO) queue $\mathbf{b}_i(t) = [b_i(t), b_i(t-1), \dots, b_i(t-M+1)]^T \in \{-1, +1\}^M$ of depth $M$. The psychological score $\sigma_i(t)$ and posture $s_i(t)$ are evaluated as:
+\begin{equation}
+    \sigma_i(t) = \mathbf{w}_i^T \mathbf{b}_i(t) = \sum_{k=0}^{M-1} w_k \cdot b_i(t-k), \quad s_i(t) = \text{sign}(\sigma_i(t))
+\end{equation}
+
+\subsection{Physical \& Mathematical Meaning of Signal Flipping ($k < 0$) in Market-Only Crowds ($p_{\text{peer}} = 0$)}
+
+A key analytical question is what signal "flipping" ($k < 0$) signifies when peer sentiment contagion is disabled ($p_{\text{peer}} = 0$). When $p_{\text{peer}} = 0$, agents do not observe peer postures $s_{\text{peer}}(t-1)$; instead, every agent independently samples candidate bits from external market returns $q_{\text{market}}(t-1)$ corrupted by noise $\eta$.
+
+\begin{enumerate}
+    \item \textbf{Mathematical Definition of Signal Flip}:
+    In the Landau drift equation $\frac{dx}{dt} = -k x - c x^3$, curvature parameter $k$ measures potential stability at neutral consensus ($x=0$). A \textit{Signal Flip} occurs when the fitted drift coefficient changes sign ($k < 0$).
+
+    \item \textbf{Absence of Pitchfork Bifurcations in Market-Only Crowds}:
+    For Pushover, Opportunist, and Traditionalist crowds under $p_{\text{peer}} = 0$, potential curvature remains positive ($k > 0$) across all cognitive noise rates $\eta \in [0, 0.45]$ and memory depths $M \in [1, 21]$ (Figure \ref{fig:heatmap_pushover}). \\
+    \textit{Physical Conclusion}: Isolated market-only signal evaluation \textbf{cannot} induce pitchfork bifurcations or spontaneous herding bistability. Peer contagion ($p_{\text{peer}} = 1.0$) is a \textit{necessary and sufficient condition} for collective phase transitions.
+
+    \item \textbf{Signal Inversion for Contrarian Crowds}:
+    For Contrarian crowds ($w_k = -1$), agents actively invert the majority vote sign ($s_i = -\text{sign}(\sigma)$). This produces a negative feedback drift ($k < 0$, Figure \ref{fig:heatmap_contrarian}), where crowd majority stance systematically anti-correlates with past market trend momentum.
+\end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{heatmap_market_only_pushover.png}
+    \caption{Market-Only Signal Flip Heatmap ($p_{\text{peer}} = 0$) for Pushover Crowd across Noise $\eta$ and Memory $M$. Demonstrates $k > 0$ everywhere (blue), proving that isolated market observation cannot trigger pitchfork bifurcations.}
+    \label{fig:heatmap_pushover}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{heatmap_market_only_contrarian.png}
+    \caption{Market-Only Signal Flip Heatmap ($p_{\text{peer}} = 0$) for Contrarian Crowd. Shows green-bordered FLIP zone ($k < 0$, red) resulting from active sign-inversion of market trend momentum.}
+    \label{fig:heatmap_contrarian}
+\end{figure}
+
+
+\section{Mean-Field Kinetics \& Supercritical Pitchfork Bifurcation}
+
+\subsection{Thermodynamic Limit ($N \to \infty$) \& Error Function Mapping}
+In the thermodynamic limit $N \to \infty$, the Gaussian Central Limit Theorem (CLT) applied to the memory queue sum yields the continuous crowd mapping equation:
+\begin{equation}
+    x(t) = \frac{1}{2} \text{erf}\left( (1 - 2\eta) \sqrt{2M} \cdot x(t-1) \right)
+\end{equation}
+
+\subsection{Taylor Series Expansion \& Landau-Ginzburg Drift Equation}
+Expanding $\text{erf}(z) = \frac{2}{\sqrt{\pi}}\left( z - \frac{z^3}{3} + \mathcal{O}(z^5) \right)$ near neutral equilibrium ($x \approx 0$) yields the Landau-Ginzburg drift equation $\frac{dx}{dt} = -k x - c x^3$:
+\begin{align}
+    \text{Curvature Parameter: } & k = 1 - (1 - 2\eta) \sqrt{\frac{2M}{\pi}} \\
+    \text{Non-Linear Coefficient: } & c = \frac{2 \sqrt{2}}{3 \sqrt{\pi}} (1 - 2\eta)^3 M^{3/2} > 0
+\end{align}
+The Landau potential energy landscape is $V(x) = \frac{1}{2} k x^2 + \frac{1}{4} c x^4$.
+
+\subsection{Derivation of Critical Memory Depth ($M_c$)}
+Setting potential curvature $k = 0$ yields the exact analytical critical memory depth:
+\begin{equation}
+    1 - (1 - 2\eta) \sqrt{\frac{2 M_c}{\pi}} = 0 \implies M_c = \frac{\pi}{2(1 - 2\eta)^2}
+\end{equation}
+Calibrating for empirical cognitive noise $\eta = 0.30$:
+\begin{equation}
+    M_c = \frac{\pi}{2(0.40)^2} \approx 9.82 \text{ trading days}
+\end{equation}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{Case_1a_-_Pure_Pushover_k_vs_M.png}
+    \caption{Curvature Parameter $k$ vs. Memory Depth $M$. Peer-interacting crowds ($p_{\text{peer}}=1.0$) cross $k=0$ at critical threshold $M_c \approx 9.82$ days, triggering a supercritical pitchfork bifurcation.}
+    \label{fig:curvature_k_M}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{Case_1a_-_Pure_Pushover_potential.png}
+    \caption{Reconstructed Empirical Potential Energy Landscapes $V(x)$. Demonstrates single-well potential ($M < M_c$) transforming into double-well herding bistability ($M \ge 11$).}
+    \label{fig:potential_landscape}
+\end{figure}
+
+\section{Panic Relaxation Kinetics \& Minority Anchoring}
+
+\subsection{Panic Initial Condition \& Half-Life Definition}
+A market panic is modeled by initializing unanimous bearish consensus:
+\begin{equation}
+    n_+(0) = 0.0 \implies x(0) = -0.5, \quad \mathbf{b}_i(0) = [-1, \dots, -1]^T
+\end{equation}
+The panic relaxation half-life $T_{1/2}$ is defined as:
+\begin{equation}
+    T_{1/2} = \min \left\{ t \in \mathbb{N} \;\Big|\; n_+(t) \ge 0.5 \right\}
+\end{equation}
+
+\subsection{Critical Slowing Down Near $M_c$}
+Linearizing near neutral equilibrium yields relaxation rate $\tau_{\text{relax}} = \frac{1}{k}$. As $M \to M_c^-$, curvature $k \to 0$, causing relaxation time $T_{1/2} \to \infty$ (Critical Slowing Down).
+
+\subsection{Hysteresis Prevention: Curmudgeon Minority Nucleation}
+Injecting a minority fraction $\phi_C \ge 10\%$ of structural trend anchors (\textit{Curmudgeons}) modifies the drift equation by an exogenous bias field $h = \phi_C \cdot C(t)$:
+\begin{equation}
+    \frac{dx}{dt} = -k x - c x^3 + \phi_C \cdot C(t)
+\end{equation}
+This breaks double-well symmetry, destroying the panic lock-in trap and guaranteeing rapid recovery ($T_{1/2} \le 30$--$60$ days).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{thalf_vs_M.png}
+    \caption{Panic Relaxation Half-Life $T_{1/2}$ vs. Memory Depth $M$. Demonstrates Critical Slowing Down and divergence of recovery times near $M_c \approx 9.82$ days.}
+    \label{fig:thalf_vs_M}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{thalf_heatmap_curmudgeon_nucleation.png}
+    \caption{Curmudgeon Minority Nucleation Heatmap on Panic Recovery $T_{1/2}$. Shows that introducing $\phi_C \ge 10\%$ macro anchors prevents sentiment lock-in across all memory horizons.}
+    \label{fig:thalf_curm_heatmap}
+\end{figure}
+
+\end{document}
+

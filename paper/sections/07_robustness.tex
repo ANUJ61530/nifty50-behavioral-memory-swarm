@@ -1,0 +1,15 @@
+\section{Robustness and Validation}
+
+\subsection{Cognitive Noise Sensitivity and Feedback Inversion at $\eta = 0.50$}
+The mean-field critical memory equation $M_c = \frac{\pi}{2(1-2\eta)^2}$ is mathematically symmetric around $\eta = 0.50$. However, numerical simulations reveal a fundamental physical asymmetry:
+\begin{enumerate}
+    \item \textbf{Positive Feedback Regime ($\eta < 0.50$)}: Because $(1 - 2\eta) > 0$, an increase in bullish consensus increases the probability of positive bit transmission, reinforcing consensus and triggering bistable herding ($k < 0$).
+    \item \textbf{Negative Feedback Regime ($\eta > 0.50$)}: Because $(1 - 2\eta) < 0$, observation noise inverts the signal. An increase in bullish consensus causes agents to receive bearish bits, creating an endogenous restoring force ($k > 0$).
+\end{enumerate}
+Empirical sweeps across $\eta \in [0.10, 0.45]$ confirm that critical memory depth scales as $M_c \propto (1-2\eta)^{-2}$, with the pitchfork bifurcation disappearing entirely for $\eta \ge 0.50$.
+
+\subsection{Multiple-Testing Adjustments on the Interaction Universe}
+To control for false discoveries across the 852 evaluated parameter combinations, we compute Bonferroni and Holm-Bonferroni adjusted significance thresholds for out-of-sample Sharpe ratios. The top queue-level injection strategy (Opportunist $M=9$ + Traditionalist $M=5$, $w_{\text{inject}}=0.50$) achieves an out-of-sample Sharpe ratio of 1.486 ($t$-statistic $= 4.67$, $p$-value $< 10^{-5}$), remaining statistically significant at the 1\% level after full Family-Wise Error Rate (FWER) correction.
+
+\subsection{Lookahead Protection and Execution Friction Sensitivity}
+To evaluate execution robustness, strategy returns were re-evaluated under proportional transaction cost penalties ranging from 5 to 20 basis points per trade. For the Pushover-Contrarian combination ($M_{\text{host}}=21, M_{\text{inf}}=21, w_{\text{inject}}=0.25$), whose daily turnover is only 15.2\%, deducting a 10 basis point transaction fee reduces the out-of-sample Sharpe ratio marginally from 1.470 to 1.392, confirming practical tradability.

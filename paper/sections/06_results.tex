@@ -1,0 +1,188 @@
+\section{Empirical Results and Strategy Performance}
+
+\subsection{Standalone Memory Kernels and Stability Sweep ($M \in [1, 21]$)}
+Table \ref{tab:top5_stable} documents the Top 5 most stable standalone configurations across memory depth $M \in [1, 21]$, ranked by the stability ratio $R_{\text{stability}} \approx 1.0$ and low generalization gap $\Delta \text{Sharpe}$.
+
+\begin{table}[htbp]
+\centering
+\caption{Top 5 Stable Standalone Personality Configurations ($M \in [1, 21]$) Evaluated Across In-Sample (2015 to 2020) and Out-of-Sample (2021 to 2025) Periods.}
+\label{tab:top5_stable}
+\begin{tabular}{cclcccccc}
+\toprule
+\textbf{Rank} & \textbf{Kernel Archetype} & \textbf{Memory Depth} & $\mathbf{\text{Sharpe}_{\text{IS}}}$ & $\mathbf{\text{Sharpe}_{\text{OOS}}}$ & $\mathbf{\text{Sharpe}_{\text{Full}}}$ & $\mathbf{R_{\text{stability}}}$ & $\mathbf{\Delta \text{Sharpe}}$ \\
+\midrule
+\textbf{1} & Pushover & $M = 9$ & \textbf{0.85} & \textbf{0.96} & \textbf{0.88} & \textbf{1.13} & \textbf{0.11} \\
+\textbf{2} & Pushover & $M = 8$ & \textbf{0.74} & \textbf{1.05} & \textbf{0.84} & \textbf{1.42} & \textbf{0.31} \\
+\textbf{3} & Pushover & $M = 10$ & \textbf{0.73} & \textbf{0.64} & \textbf{0.70} & \textbf{0.88} & \textbf{0.09} \\
+\textbf{4} & Traditionalist & $M = 19$ & 0.51 & 0.63 & 0.55 & 1.24 & 0.12 \\
+\textbf{5} & Opportunist & $M = 9$ & 0.44 & 0.57 & 0.48 & 1.28 & 0.13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{standalone_5_personalities_full_timeline_is_oos.png}
+    \caption{Full Timeline Cumulative Wealth Growth (Log Scale) across 5 Standalone Personality Kernels on Nifty 50 Data (2015 to 2025). Shaded regions demarcate In-Sample (IS: 2015 to 2020) and Out-of-Sample (OOS: 2021 to 2025) periods.}
+    \label{fig:standalone_master}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{standalone_sharpe_turnover_vs_M.png}
+    \caption{Standalone Kernels Performance vs. Cognitive Memory Depth $M \in [1, 21]$. Left: Annualized Sharpe Ratio for In-Sample (dashed) and Out-of-Sample (solid) periods. Right: Daily Portfolio Turnover Percentage. Out-of-sample Sharpe ratio peaks at intermediate memory depths ($M^* = 8$ to $10$ days) while turnover drops exponentially.}
+    \label{fig:standalone_sweeps}
+\end{figure}
+
+\paragraph{Physical Interpretation}: Intermediate memory depths ($M^* = 8$ to $10$ days) maximize out-of-sample Sharpe ratios because they operate immediately adjacent to the theoretical critical boundary $M_c \approx 9.82$ days. This horizon extracts maximum informational signal without entering the double-well hysteresis regime. If market returns were an uncorrelated random walk, strategy Sharpe ratios would remain zero across all memory depths.
+
+\subsection{Multi-Architecture Personality Combinations}
+Table \ref{tab:combination_summary} reports the performance across all combination architectures evaluated on the out-of-sample testing period (2021 to 2025).
+
+\begin{table}[htbp]
+\centering
+\caption{Out-of-Sample Strategy Performance Across Personality Combination Architectures (2021 to 2025).}
+\label{tab:combination_summary}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Combination Architecture} & $\mathbf{\text{Sharpe}_{\text{IS}}}$ & $\mathbf{\text{Sharpe}_{\text{OOS}}}$ & $\mathbf{\text{Ret}_{\text{ann}}}$ & \textbf{MaxDD} & \textbf{Daily Turnover} \\
+\midrule
+\textbf{Queue Injection (Opp $M=9$ + Trad $M=5$, $w=0.50$)} & \textbf{1.52} & \textbf{1.486} & \textbf{+18.4\%} & \textbf{-14.6\%} & 44.3\% \\
+\textbf{Queue Injection (Push $M=21$ + Cont $M=21$, $w=0.25$)} & \textbf{1.49} & \textbf{1.470} & \textbf{+16.8\%} & \textbf{-16.4\%} & \textbf{15.2\%} \\
+Kernel Blend (Opp + Trad Convex Mix) & 0.68 & 0.627 & +7.9\% & -19.6\% & 52.0\% \\
+Regime Switch (Vol-Gated Opp/Cont) & 0.41 & 0.331 & +3.6\% & -19.3\% & 41.0\% \\
+Ensemble Vote (Majority Voting) & 0.18 & 0.153 & +1.2\% & -19.6\% & 53.8\% \\
+Standalone Pushover Baseline ($w=0$) & 0.78 & 0.957 & +10.2\% & -15.6\% & 21.1\% \\
+Nifty 50 Buy \& Hold Benchmark & 0.45 & 0.820 & +12.4\% & -38.4\% & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{combination_architectures_full_timeline_is_oos.png}
+    \caption{Full Timeline Cumulative Wealth Growth (Log Scale) for Personality Combination Architectures on Nifty 50 Data (2015 to 2025) with In-Sample (IS) and Out-of-Sample (OOS) periods demarcated.}
+    \label{fig:combination_master}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{combination_sharpe_turnover_vs_M.png}
+    \caption{Combination Architectures Performance vs. Host Memory Depth $M \in [1, 21]$. Left: In-Sample (dashed) and Out-of-Sample (solid) Sharpe Ratios. Right: Daily Portfolio Turnover Percentage. Queue-level injection maintains high Sharpe ratios across all horizons.}
+    \label{fig:combination_sweeps}
+\end{figure}
+
+\paragraph{Physical Interpretation}: Microscopic queue-level injection ($\text{Sharpe}_{\text{OOS}} = 1.486$) outperforms linear blending (0.627) and majority voting (0.153) because injection modifies the Bernoulli probability distribution of bits prior to the non-linear sign threshold. This preserves phase flexibility and prevents premature signal quantization.
+
+\subsection{Intuitive Overfitting Diagnostic Map}
+Figure \ref{fig:overfit_diag} displays the In-Sample versus Out-of-Sample Sharpe ratio distribution across 797 evaluated grid search configurations.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\linewidth]{train_vs_test_sharpe_overfit.png}
+    \caption{Intuitive Overfitting Diagnostic Map: In-Sample (Train) vs. Out-of-Sample (Test) Sharpe Ratios across 797 Grid Search Configurations. Green shaded region denotes the Robust Generalization Zone (Train $\approx$ Test). Red shaded region denotes the Overfitting Trap Zone ($\Delta \text{Sharpe} > 0.40$). Queue injection configurations (orange dots) cluster tightly along the robust 1:1 diagonal.}
+    \label{fig:overfit_diag}
+\end{figure}
+
+\paragraph{Physical Interpretation}: Configurations in the red overfitting trap zone feature long memory queues ($M \ge 15$) that lock into historical trends. Configurations in the green robust zone maintain sub-critical effective memory ($M_{\text{eff}} \le M_c$), enabling rapid memory queue refreshment.
+
+\subsection{Macro Swarm Bifurcations and Potential Landscapes}
+Figures \ref{fig:k_vs_M} and \ref{fig:pot_main} present the empirical curvature $k(M)$ and reconstructed potential energy landscapes $V(n_+)$ calibrated on Nifty 50 returns ($N=150$ agents, $\eta = 0.30$).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.88\linewidth]{Case_1a_-_Pure_Pushover_k_vs_M.png}
+    \caption{Empirical Curvature $k$ vs. Memory Depth $M$ calibrated on Nifty 50 Data. Peer-interacting crowds ($p_{\text{peer}}=1.0$, orange) cross $k=0$ between $M=9$ and $M=11$ trading days, matching analytical threshold $M_c = 9.82$ days. Isolated market processing ($p_{\text{peer}}=0$, blue) remains strictly positive ($k > 0$) across all memory depths.}
+    \label{fig:k_vs_M}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{Case_1a_-_Pure_Pushover_potential.png}
+    \caption{Reconstructed Empirical Potential Energy Landscapes $V(n_+)$ for Pushover Crowds. Left: Isolated market processing ($p_{\text{peer}}=0$) maintains single-well restoring potentials. Right: Peer interaction ($p_{\text{peer}}=1.0$) develops double-well bistability for $M \ge 11$ days.}
+    \label{fig:pot_main}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\linewidth]{heatmap_market_only_pushover.png}
+        \caption{Pushover Crowd ($k > 0$ strictly)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\linewidth]{heatmap_market_only_contrarian.png}
+        \caption{Contrarian Crowd ($k < 0$ FLIP zone)}
+    \end{subfigure}
+    \caption{Market-Only ($p_{\text{peer}}=0$) Signal Flip Heatmaps across Observation Noise $\eta$ and Memory Depth $M$. (a) Pushover crowds exhibit $k > 0$ everywhere (blue), proving that isolated market observation cannot trigger pitchfork bifurcations. (b) Contrarian crowds invert market trend signs, generating negative feedback drift ($k < 0$, red).}
+    \label{fig:heatmaps_market}
+\end{figure}
+
+\paragraph{Physical Interpretation}: Under isolated price observation ($p_{\text{peer}}=0$), cognitive observation errors are independently distributed and suppressed by the Law of Large Numbers, yielding strictly restoring single-well potentials ($k > 0$). Peer sentiment transmission ($p_{\text{peer}}=1.0$) is a mandatory requirement for collective market herding.
+
+\subsection{Panic Relaxation Kinetics ($T_{1/2}$) and Critical Slowing Down}
+Figure \ref{fig:thalf_res} documents panic relaxation half-lives $T_{1/2}$ initialized from unanimous bearish consensus ($n_+(0)=0.0$).
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\linewidth]{thalf_vs_M.png}
+        \caption{Relaxation Half-Life $T_{1/2}$ vs. $M$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\linewidth]{thalf_heatmap_curmudgeon_nucleation.png}
+        \caption{Curmudgeon Nucleation Heatmap}
+    \end{subfigure}
+    \caption{Panic Relaxation Dynamics on Nifty 50 Data. (a) Pushover crowds undergo critical slowing down near $M_c \approx 9.82$ days, diverging to infinity for $M \ge 13$. Opportunists recover rapidly ($T_{1/2} \approx 35$ days). (b) Introducing $\phi_C \ge 10\%$ Curmudgeon anchors breaks double-well symmetry, guaranteeing recovery within $T_{1/2} \le 30$ to $60$ days across all memory depths.}
+    \label{fig:thalf_res}
+\end{figure}
+
+\paragraph{Physical Interpretation}: As $M \to M_c^-$, the linear restoring force $k(M) \to 0$, causing recovery time constants $\tau = 1/k$ to diverge (Critical Slowing Down). Introducing structural macro anchors ($\phi_C \ge 10\%$) creates an external symmetry-breaking field that tilts the potential landscape and eliminates the lower panic trap.
+
+\subsection{PIMS Unification and Strategy Selection Benchmark}
+Figures \ref{fig:pims_unif1}, \ref{fig:pims_unif2}, and \ref{fig:pims_pred} demonstrate how crowd physics predicts backtest overfitting and guides parameter selection across 852 configurations.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\linewidth]{pims_overfitting_vs_normalized_M.png}
+    \caption{PIMS Overfitting Phase Transition: Overfitting Gap ($\Delta \text{Sharpe} = \text{Sharpe}_{\text{IS}} - \text{Sharpe}_{\text{OOS}}$) vs. Normalized Cognitive Memory Depth ($M_{\text{eff}} / M_c$). Sub-critical configurations ($M/M_c \le 1.0$) maintain low overfitting, while super-critical configurations ($M/M_c > 1.0$) enter severe performance decay.}
+    \label{fig:pims_unif1}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\linewidth]{pims_curvature_overlay_sharpe.png}
+    \caption{Overlay of Theoretical Potential Curvature $k(M)$ (Red) with Out-of-Sample Strategy Sharpe Ratios $\text{Sharpe}_{\text{OOS}}(M)$ (Blue, Orange, Green). Peak out-of-sample performance occurs at $M^* \approx 8$ to $9$ days, immediately adjacent to the critical bifurcation boundary $M_c \approx 9.82$ days.}
+    \label{fig:pims_unif2}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{potential_function_parameter_prediction.png}
+    \caption{Physics-Informed Parameter Prediction Engine. Left: Optimal memory depth is analytically predicted by $M^* = \lfloor M_c \rfloor = 9$ days. Right: Theoretical potential well barrier height $\Delta V(M) = k(M)^2 / (4 c(M))$ correlates linearly with empirical strategy overfitting $\Delta \text{Sharpe}$.}
+    \label{fig:pims_pred}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Strategy Selection Benchmark: Naive In-Sample Selection vs. Physics-Informed PIMS Filter ($M_{\text{eff}} \le M_c$).}
+\label{tab:pims_bench}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Selection Methodology} & $\mathbf{\text{Sharpe}_{\text{IS}}}$ & $\mathbf{\text{Sharpe}_{\text{OOS}}}$ & $\mathbf{\Delta \text{Sharpe}}$ & \textbf{Out-of-Sample Gain} \\
+\midrule
+\textbf{Naive In-Sample Selection} & \textbf{1.001} & 0.399 & 0.602 & Baseline \\
+\textbf{PIMS Physics Filter ($M_{\text{eff}} \le M_c$)} & 0.938 & \textbf{0.564} & \textbf{0.375} & \textbf{+41.4\% OOS Sharpe / -37.7\% Overfit} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\linewidth]{pims_benchmark_selection.png}
+    \caption{Strategy Selection Benchmark comparing Naive In-Sample Selection against the Physics-Informed PIMS Filter. The PIMS Filter increases Out-of-Sample Sharpe by +41.4\% while reducing the overfitting gap by 37.7\%.}
+    \label{fig:pims_bench_plot}
+\end{figure}
+
+\paragraph{Physical Interpretation}: Naive in-sample optimization selects configurations deep in the double-well regime ($M > M_c$) because potential barrier trapping mimics trend-following profitability during in-sample bull runs. Applying the PIMS filter ($M_{\text{eff}} \le M_c$) eliminates super-critical lock-in configurations prior to backtesting, retaining only ergodic strategies that generalize out-of-sample.

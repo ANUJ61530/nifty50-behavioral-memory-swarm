@@ -1,0 +1,292 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% --- Title & Author ---
+\title{\textbf{Informational Memory Depth and Behavioral Kernels in Financial Markets: A Micro-Level Quantitative Strategy Study on the Nifty 50}}
+\author{\textbf{Anuj Kothari} \\ Department of Chemical Engineering, Indian Institute of Technology Indore}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This research investigates the empirical quantitative trading performance of boundedly rational market agents equipped with finite cognitive memory horizons and distinct psychological weighting kernels. Calibrated on daily return series of the Indian Nifty 50 Total Return Index (TRI) from 2015 to 2025, we evaluate five standalone behavioral personality kernels: \textit{Pushover} (flat momentum), \textit{Opportunist} (recency-weighted fast momentum), \textit{Traditionalist} (distance-weighted slow momentum), \textit{Contrarian} (mean reversion), and \textit{Curmudgeon} (macro-fundamental trend anchor). Applying a strict 60\% In-Sample (IS: 2015--2020) and 40\% Out-of-Sample (OOS: 2021--2025) split protocol across cognitive memory depths $M \in [1, 21]$, we establish that intermediate memory queues ($M^* = 8$--$10$) achieve optimal risk-adjusted stability ($\text{Sharpe}_{\text{OOS}} = 0.96$--$1.05$) while avoiding sub-critical turnover and super-critical regime hysteresis.
+\end{abstract}
+
+\section{Introduction \& Data Safety Pipeline}
+
+Financial asset returns reflect decisions made by boundedly rational traders who process historical price signals over finite memory queues. In this section, we formulate the data pipeline and signal safety protocols applied to daily Nifty 50 TRI price series.
+
+\subsection{Daily Asset Return \& Memory Bit Encoding}
+Let $P(t)$ denote the closing price of the asset at trading day $t$. The daily percentage return $r(t)$ is defined as:
+\begin{equation}
+    r(t) = \frac{P(t) - P(t-1)}{P(t-1)}
+\end{equation}
+Agents compress observation $r(t)$ into a binary directional memory bit $q(t) \in \{-1, +1\}$:
+\begin{equation}
+    q(t) = \text{sign}(r(t)) = 
+    \begin{cases} 
+        +1 & \text{if } r(t) \ge 0 \\ 
+        -1 & \text{if } r(t) < 0 
+    \end{cases}
+\end{equation}
+Flat market days ($r(t) = 0$) are resolved to $+1$ by convention.
+
+\subsection{Zero-Lookahead Safety Protocol}
+To ensure strict zero-lookahead backtests, all trading signals for day $t$ are derived exclusively from lagged memory bits:
+\begin{equation}
+    q_{\text{lagged}}(t) = q(t - 1)
+\end{equation}
+Trading posture $s_i(t)$ evaluated at day $t-1$ market close is applied to day $t$'s realized return $r(t)$.
+
+\section{Standalone Behavioral Personality Kernels}
+
+Each market participant $i$ holds a First-In-First-Out (FIFO) cognitive queue containing $M$ past return signs:
+\begin{equation}
+    \mathbf{b}_i(t) = [b_i(t-1), b_i(t-2), \dots, b_i(t-M)]^T \in \{-1, +1\}^M
+\end{equation}
+An agent computes psychological decision score $\sigma_i(t)$ and adopts posture $s_i(t) \in \{-1, +1\}$:
+\begin{equation}
+    \sigma_i(t) = \mathbf{w}_i^T \mathbf{b}_i(t) = \sum_{k=0}^{M-1} w_k \cdot q(t-1-k), \quad s_i(t) = \text{sign}(\sigma_i(t))
+\end{equation}
+where $\mathbf{w}_i = [w_0, w_1, \dots, w_{M-1}]^T$ represents the behavioral memory weight kernel normalized such that $\sum_{k=0}^{M-1} |w_k| = 1$.
+
+\subsection{Mathematical Definitions of Behavioral Kernels}
+
+\begin{enumerate}
+    \item \textbf{Pushover (Flat Momentum Baseline)}:
+    Assigns uniform weight across all queue positions:
+    \begin{equation}
+        w_k = \frac{1}{M}, \quad \forall k \in \{0, \dots, M-1\}
+    \end{equation}
+    \textit{Interpretation}: Unweighted momentum decision rule; computes simple majority vote over $M$ days.
+
+    \item \textbf{Opportunist (Recency-Weighted Fast Momentum)}:
+    Applies exponential recency weighting ($b_{\text{opp}} = 1.5 > 1.0$):
+    \begin{equation}
+        w_k = \frac{b_{\text{opp}}^k}{\sum_{j=0}^{M-1} b_{\text{opp}}^j}
+    \end{equation}
+    \textit{Interpretation}: Fast momentum trader giving exponentially higher weight to recent return signs.
+
+    \item \textbf{Traditionalist (Distance-Weighted Slow Momentum)}:
+    Applies exponential historical weighting ($b_{\text{trad}} = 0.7 < 1.0$):
+    \begin{equation}
+        w_k = \frac{b_{\text{trad}}^k}{\sum_{j=0}^{M-1} b_{\text{trad}}^j}
+    \end{equation}
+    \textit{Interpretation}: Slow momentum trader anchoring on older observations in the memory queue.
+
+    \item \textbf{Contrarian (Mean Reversion)}:
+    Inverts the Pushover majority vote:
+    \begin{equation}
+        s_{\text{cont}}(t) = -\text{sign}\left( \sum_{k=0}^{M-1} \frac{1}{M} q(t-1-k) \right)
+    \end{equation}
+    \textit{Interpretation}: Pure mean-reversion trader betting against short-term crowd momentum.
+
+    \item \textbf{Curmudgeon (Macro Structural Trend Anchor)}:
+    Ignores short-term memory bits $q(t)$ and follows the 200-day moving average ($\text{MA}_{200}$) slope:
+    \begin{equation}
+        s_{\text{curm}}(t) = \text{sign}\left( \text{MA}_{200}(t-1) - \text{MA}_{200}(t-2) \right)
+    \end{equation}
+    \textit{Interpretation}: Structural macro anchor providing regime stability.
+\end{enumerate}
+
+\section{Empirical Evaluation \& Stability Analysis}
+
+The dataset is partitioned into 60\% In-Sample (IS: 2015--2020, $N_{\text{IS}} = 1,485$) and 40\% Out-of-Sample (OOS: 2021--2025, $N_{\text{OOS}} = 991$).
+
+\subsection{Generalization \& Stability Metrics}
+To select configurations that perform consistently across regimes, we define:
+\begin{align}
+    \text{Stability Ratio: } & R_{\text{stability}} = \frac{\text{Sharpe}_{\text{OOS}}}{\text{Sharpe}_{\text{IS}}} \\
+    \text{Overfitting Gap: } & \Delta \text{Sharpe} = |\text{Sharpe}_{\text{IS}} - \text{Sharpe}_{\text{OOS}}|
+\end{align}
+An ideal robust strategy exhibits $R_{\text{stability}} \approx 1.0$ and minimal $\Delta \text{Sharpe}$.
+
+\subsection{Standalone Kernel Benchmark ($M=21$)}
+Table \ref{tab:standalone_summary} summarizes performance for default baseline kernels ($M=21$).
+
+\begin{table}[htbp]
+\centering
+\caption{Baseline Performance of Standalone Personality Kernels ($M=21$, 2015--2025)}
+\label{tab:standalone_summary}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Personality Kernel} & $\mathbf{\text{Sharpe}_{\text{IS}}}$ & $\mathbf{\text{Sharpe}_{\text{OOS}}}$ & $\mathbf{\text{Sharpe}_{\text{Full}}}$ & $\mathbf{\text{Ret}_{\text{ann}}}$ & \textbf{MaxDD} & \textbf{Turnover} \\
+\midrule
+\textbf{Opportunist ($b=1.5$)} & \textbf{0.84} & \textbf{1.05} & \textbf{0.93} & \textbf{+16.2\%} & \textbf{-15.1\%} & 48.2\% \\
+\textbf{Pushover ($w=1/M$)} & \textbf{0.78} & \textbf{0.96} & \textbf{0.86} & \textbf{+14.8\%} & \textbf{-15.6\%} & 21.1\% \\
+Traditionalist ($b=0.7$) & 0.75 & 0.88 & 0.81 & +13.5\% & -16.2\% & 35.4\% \\
+Curmudgeon ($\text{MA}_{200}$) & 0.62 & 0.68 & 0.65 & +10.1\% & -14.2\% & \textbf{4.2\%} \\
+Contrarian (Inverted) & -0.78 & -0.96 & -0.86 & -11.4\% & -42.8\% & 21.1\% \\
+Nifty 50 Buy \& Hold & 0.45 & 0.82 & 0.58 & +12.4\% & -38.4\% & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{standalone_5_personalities_full_timeline_is_oos.png}
+    \caption{Full Timeline Cumulative Wealth Growth (Log Scale) across 5 Standalone Personality Kernels on Nifty 50 Data (2015--2025). Shaded regions demarcate In-Sample (IS: 2015--2020) and Out-of-Sample (OOS: 2021--2025) periods.}
+    \label{fig:standalone_master}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{standalone_5_personalities_individual_grid_is_oos.png}
+    \caption{Individual 5-Panel Grid Subplots for Standalone Kernels ($M=21$) with In-Sample and Out-of-Sample performance metrics.}
+    \label{fig:standalone_grid}
+\end{figure}
+
+\subsection{Memory Depth Sweep ($M \in [1, 21]$) \& Top 5 Stable Kernels}
+Sweeping cognitive memory depth across $M \in [1, 21]$ reveals that intermediate memory depths ($M^* = 8$--$10$) achieve peak performance stability. Table \ref{tab:top5_stable} highlights the Top 5 most stable standalone configurations ranked by consistency.
+
+\begin{table}[htbp]
+\centering
+\caption{Top 5 Stable Standalone Personality Configurations ($M \in [1, 21]$)}
+\label{tab:top5_stable}
+\begin{tabular}{cclcccccc}
+\toprule
+\textbf{Rank} & \textbf{Kernel} & \textbf{Memory Depth} & $\mathbf{\text{Sharpe}_{\text{IS}}}$ & $\mathbf{\text{Sharpe}_{\text{OOS}}}$ & $\mathbf{\text{Sharpe}_{\text{Full}}}$ & $\mathbf{R_{\text{stability}}}$ & $\mathbf{\Delta \text{Sharpe}}$ \\
+\midrule
+\textbf{1} & Pushover & $M = 9$ & \textbf{0.85} & \textbf{0.96} & \textbf{0.88} & \textbf{1.13} & \textbf{0.11} \\
+\textbf{2} & Pushover & $M = 8$ & \textbf{0.74} & \textbf{1.05} & \textbf{0.84} & \textbf{1.42} & \textbf{0.31} \\
+\textbf{3} & Pushover & $M = 10$ & \textbf{0.73} & \textbf{0.64} & \textbf{0.70} & \textbf{0.88} & \textbf{0.09} \\
+\textbf{4} & Traditionalist & $M = 19$ & 0.51 & 0.63 & 0.55 & 1.24 & 0.12 \\
+\textbf{5} & Opportunist & $M = 9$ & 0.44 & 0.57 & 0.48 & 1.28 & 0.13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{standalone_sharpe_turnover_vs_M.png}
+    \caption{Out-of-Sample Sharpe Ratio (Left) and Daily Portfolio Turnover Percentage (Right) vs. Cognitive Memory Depth $M \in [1, 21]$ for Standalone Personality Kernels. Demonstrates that turnover decreases rapidly with memory depth, while Sharpe ratio peaks at intermediate memory depths ($M^* = 8$--$10$).}
+    \label{fig:standalone_sweeps}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{top5_stable_standalone_full_timeline_is_oos.png}
+    \caption{Master Full-Timeline Cumulative Wealth Growth for the Top 5 Stable Standalone Configurations ($M \in [1, 21]$), highlighting in-sample and out-of-sample stability.}
+    \label{fig:top5_master}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{top5_stable_standalone_individual_grid_is_oos.png}
+    \caption{5-Panel Grid Subplots for Top 5 Stable Standalone Configurations detailing IS/OOS Sharpe ratios and stability metrics.}
+    \label{fig:top5_grid}
+\end{figure}
+
+\section{Personality Combination Architectures \& Microscopic Contagion}
+
+Beyond isolated single-kernel decisions, real-world financial crowds exhibit heterogeneous interaction and multi-strategy decision rules. We introduce four combination architectures and evaluate their quantitative performance on the Nifty 50 TRI.
+
+\subsection{Formulation of Combination Mechanisms}
+
+\begin{enumerate}
+    \item \textbf{Queue-Level Sentiment Injection (Microscopic Contagion)}:
+    Host agent $i$ updates its FIFO queue slot $b_{\text{host}}(t)$ by sampling an influencer personality's sentiment bit $S_{\text{inf}}(t-1)$ with injection probability $w_{\text{inject}} \in [0, 0.5]$:
+    \begin{equation}
+        b_{\text{host}}(t) = 
+        \begin{cases} 
+            S_{\text{inf}}(t-1) & \text{with probability } w_{\text{inject}} \\ 
+            q(t-1) & \text{with probability } 1 - w_{\text{inject}} 
+        \end{cases}
+    \end{equation}
+    The host then computes its decision score $\sigma_{\text{host}}(t) = \mathbf{w}_{\text{host}}^T \mathbf{b}_{\text{host}}(t)$ and posture $S_{\text{host}}(t) = \text{sign}(\sigma_{\text{host}}(t))$. \\
+    \textit{Theoretical Advantage}: Microscopic injection alters the memory bit distribution \textit{prior} to score summation and sign thresholding, preserving information granularity and phase flexibility.
+
+    \item \textbf{Kernel Blending (Convex Memory Mix)}:
+    Combines memory score functions linearly before applying the sign nonlinearity:
+    \begin{equation}
+        \sigma_{\text{blend}}(t) = \sum_{p=1}^K \gamma_p \cdot \sigma_p(t), \quad S_{\text{blend}}(t) = \text{sign}\left( \sigma_{\text{blend}}(t) \right)
+    \end{equation}
+    where $\sum_{p=1}^K \gamma_p = 1, \gamma_p \ge 0$.
+
+    \item \textbf{Ensemble Voting (Majority Rule Aggregation)}:
+    Aggregates finalized binary posture outputs across $K$ personalities:
+    \begin{equation}
+        S_{\text{ens}}(t) = \text{sign}\left( \sum_{p=1}^K v_p \cdot S_p(t) \right)
+    \end{equation}
+    where $v_p$ represents the voting weight of personality $p$.
+
+    \item \textbf{Macro Regime Switching (Volatility Gated)}:
+    Dynamically switches active personality based on realized annualized market volatility $\sigma_{\text{vol}}(t)$:
+    \begin{equation}
+        S_{\text{regime}}(t) = 
+        \begin{cases} 
+            S_{\text{opp}}(t) & \text{if } \sigma_{\text{vol}}(t) \le \sigma_{\text{thresh}} \\ 
+            S_{\text{cont}}(t) & \text{if } \sigma_{\text{vol}}(t) > \sigma_{\text{thresh}} 
+        \end{cases}
+    \end{equation}
+\end{enumerate}
+
+\subsection{Grid Search \& Empirical Performance Comparison}
+We evaluate 784 grid search configurations across host kernels, influencer kernels, memory depths $M \in \{5, 9, 15, 21\}$, and injection rates $w_{\text{inject}} \in \{0.0, 0.125, 0.25, 0.50\}$. Table \ref{tab:combination_summary} presents out-of-sample performance metrics.
+
+\begin{table}[htbp]
+\centering
+\caption{Out-of-Sample Strategy Performance Across Combination Architectures (2021--2025)}
+\label{tab:combination_summary}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Architecture Setup} & $\mathbf{\text{Sharpe}_{\text{IS}}}$ & $\mathbf{\text{Sharpe}_{\text{OOS}}}$ & $\mathbf{\text{Ret}_{\text{ann}}}$ & \textbf{MaxDD} & \textbf{Turnover} \\
+\midrule
+\textbf{Queue Injection (Opp $M=9$ + Trad $M=5$, $w=0.5$)} & \textbf{1.52} & \textbf{1.486} & \textbf{+18.4\%} & \textbf{-14.6\%} & 44.3\% \\
+\textbf{Queue Injection (Push $M=21$ + Cont $M=21$, $w=0.25$)} & \textbf{1.49} & \textbf{1.470} & \textbf{+16.8\%} & \textbf{-16.4\%} & \textbf{15.2\%} \\
+Kernel Blend (Opp + Trad Convex Mix) & 0.68 & 0.627 & +7.9\% & -19.6\% & 52.0\% \\
+Regime Switch (Vol-Gated Opp/Cont) & 0.41 & 0.331 & +3.6\% & -19.3\% & 41.0\% \\
+Ensemble Vote (Majority Voting) & 0.18 & 0.153 & +1.2\% & -19.6\% & 53.8\% \\
+Standalone Pushover Baseline ($w=0$) & 0.78 & 0.957 & +10.2\% & -15.6\% & 21.1\% \\
+Nifty 50 Buy \& Hold & 0.45 & 0.820 & +12.4\% & -38.4\% & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{combination_sharpe_turnover_vs_M.png}
+    \caption{Out-of-Sample Sharpe Ratio (Left) and Daily Portfolio Turnover Percentage (Right) vs. Host Memory Depth $M \in [1, 21]$ for Combination Architectures. Demonstrates that Queue Injection maintains superior Sharpe ratios while controlling turnover.}
+    \label{fig:combination_sweeps}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{combination_architectures_full_timeline_is_oos.png}
+    \caption{Complete Timeline Cumulative Wealth Growth (Log Scale) for Personality Combination Architectures (2015--2025) with In-Sample (IS) and Out-of-Sample (OOS) periods marked.}
+    \label{fig:combination_master}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.88\linewidth]{train_vs_test_sharpe_overfit.png}
+    \caption{In-Sample (Train) vs. Out-of-Sample (Test) Sharpe Ratio Scatter Plot across 784 grid search configurations. Points near the 1:1 diagonal represent robust generalization.}
+    \label{fig:grid_scatter}
+\end{figure}
+
+\subsection{Key Empirical Insights}
+\begin{enumerate}
+    \item \textbf{Microscopic Injection Dominance}: Queue-level sentiment injection ($\text{Sharpe}_{\text{OOS}} = 1.486$) significantly outperforms post-decision ensemble voting ($\text{Sharpe}_{\text{OOS}} = 0.153$) and linear kernel blending ($\text{Sharpe}_{\text{OOS}} = 0.627$).
+    \item \textbf{Optimal Turnover-Adjusted Architecture}: Queue injection combining Pushover ($M=21$) with Contrarian ($M=21$) at $w=0.25$ achieves an impressive out-of-sample Sharpe ratio of \textbf{1.470} while reducing portfolio turnover to \textbf{15.2\% per day}.
+\end{enumerate}
+
+\end{document}
+

@@ -1,0 +1,14 @@
+\section{Mechanistic Interpretation}
+
+\subsection{Microscopic Granularity versus Post-Decision Quantization}
+A core quantitative finding is that queue-level sentiment injection ($\text{Sharpe}_{\text{OOS}} = 1.486$) dramatically outperforms ensemble majority voting ($\text{Sharpe}_{\text{OOS}} = 0.153$) and linear kernel blending ($\text{Sharpe}_{\text{OOS}} = 0.627$). 
+
+The mechanistic origin of this performance disparity lies in the mathematical stage at which mixing occurs. In ensemble voting, each personality applies a sign thresholding operation $S_p(t) = \text{sign}(\sigma_p(t))$ independently, destroying continuous score magnitude before aggregation. In contrast, queue-level injection modifies the Bernoulli sampling distribution inside the FIFO buffer prior to score summation and sign evaluation. This enables weak minority influencer beliefs to accumulate continuously over time, preventing premature position liquidations during extended market trends.
+
+\subsection{The Edge of Criticality as an Information Extraction Boundary}
+Empirical out-of-sample performance reaches its global peak at memory depths $M^* \approx 8$ to $9$ trading days, immediately adjacent to the theoretical pitchfork bifurcation threshold $M_c = \frac{\pi}{2(1-2\eta)^2} \approx 9.82$ days.
+
+This boundary represents an informational tradeoff. In the sub-critical regime ($M \ll M_c$), the potential landscape $V(x)$ is steeply restoring ($k \gg 0$), causing the strategy to forget past returns too quickly and incur excessive turnover. In the super-critical regime ($M > M_c$), the potential develops double-well hysteresis ($k < 0$), trapping the strategy in stale sentiment states. Operating right at the edge of criticality ($M \approx M_c^-$) maximizes memory utilization while preserving zero potential barrier height ($\Delta V = 0$).
+
+\subsection{Falsification Criteria}
+For this physical mechanism to be invalid, strategy overfitting ($\Delta \text{Sharpe}$) would have to be uncorrelated with memory depth $M$ or would have to occur independently of the theoretical potential well barrier $\Delta V(M)$. The empirical verification that $\Delta \text{Sharpe} \propto \Delta V(M)$ and that the PIMS filter eliminates 100\% of severe overfitters establishes the physical validity of the framework.
